@@ -9,4 +9,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/dev_cloud_disks_v100?characterEncoding=UTF-8&serverTimezone=GMT%2B8&allowMultiQueries=true
     username: root
-    password: adminer
+    password: 123456
+
+hadoop:
+  name-node: hdfs://carrocean.top:9000
+  namespace: /com/example/hadoop/hdfs
