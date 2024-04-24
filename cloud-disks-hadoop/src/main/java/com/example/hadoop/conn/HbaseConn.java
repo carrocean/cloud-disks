@@ -25,7 +25,7 @@ public class HbaseConn {
         try {
             Configuration hconf = new Configuration();
             Configuration conf = HBaseConfiguration.create(hconf);
-            conf.set("hbase.zookeeper.quorum","carrocean.top");  //hbase 服务地址
+            conf.set("hbase.zookeeper.quorum","47.113.149.53");  //hbase 服务地址
             conf.set("hbase.zookeeper.property.clientPort","2181"); //端口号
             conn = ConnectionFactory.createConnection(conf);
             admin = conn.getAdmin();
