@@ -38,7 +38,7 @@
         <div class="iconfont icon-refresh"></div>    
       </div>
       <!--导航-->
-      <div>全部文件</div>
+      <div style="padding-left: 20px; ">全部文件</div>
     </div>
     <div class="file-list">
       <Table 
@@ -50,9 +50,26 @@
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
-        <template #fileName="index, row">
-          <div class="file-name">
-            {{ row.fileName }}
+        
+            <template #fileName="index, row">
+          <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
+            <template v-if="(row.fileType ==3 || row.fileType==1)&&row.status ==2">
+              <Icon :cover="row.fileCover" :width="32"></Icon>            
+            </template>
+            <template v-else>
+              <Icon v-if="row.folderType == 0" :fileType="row.fileType"></Icon>
+              <Icon v-if="row.folderType == 1" :fileType="0"></Icon>
+            </template>
+            <span class="file-name" :title="row.fileName">
+            <span>{{ row.fileName}}</span>
+            <span v-if="row.status==0" class="transfer-status">转码中</span>
+            <span v-if="row.status==1" class="transfer-status transfer-fail">转码失败</span>
+            </span>
+            <span class="op">
+              <template v-if="row.showOp &&row.fileId && row.status==2">
+                <span class="iconfont icon-share1">分享</span>
+              </template>
+            </span>
           </div>
         </template>
     </Table>
@@ -124,7 +141,16 @@ const loadDataList = async () => {
 };
 
 const rowSelected = () => {};
+const showOp=(row)=> {
+  tableData.value.list.forEach((element)=>{
+    element.showOp =false;
+  });
+  row.showOp = true;
+};
 
+const cancelShowOp=(row)=> {
+  row.showOp = false;
+}
 </script>
 
 <style lang="scss" scoped>
