@@ -10,13 +10,13 @@
         @submit.prevent
       >
         <div class="login-title">云盘</div>
-        <!-- 邮箱 -->
-        <el-form-item prop="email">
+        <!-- 账号 -->
+        <el-form-item prop="UserName">
           <el-input
             size="large"
             clearable
-            placeholder="请输入邮箱"
-            v-model.trim="formData.email"
+            placeholder="请输入账号"
+            v-model.trim="formData.UserName"
             maxLength="150"
           >
             <template #prefix>
@@ -41,22 +41,6 @@
         </el-form-item>
         <!-- 注册 -->
         <div v-if="opType == 0 || opType == 2">
-          <!-- <el-form-item prop="emailCode">
-            <div class="send-email-panel">
-              <el-input
-                size="large"
-                placeholder="请输入邮箱验证码"
-                v-model.trim="formData.emailCode"
-              >
-                <template #prefix>
-                  <span class="iconfont icon-checkcode"></span>
-                </template>
-              </el-input>
-              <el-button class="send-mail-btn" type="primary" size="large"
-                >获取验证码</el-button
-              >
-            </div>
-          </el-form-item> -->
           <!-- 输入昵称 -->
           <el-form-item prop="nickName" v-if="opType == 0">
             <el-input
@@ -186,11 +170,13 @@ const checkRePassword = (rule, value, callback) => {
 const formData = ref({});
 const formDataRef = ref();
 const rules = {
-  email: [
-    { required: true, message: "请输入正确的邮箱" },
-    { validator: proxy.Verify.email, message: "请输入正确的邮箱" },
+  UserName: [
+    { required: true, message: "请输入正确的账号" },
+    // { validator: proxy.Verify.UserName, message: "请输入正确的账号" }
+    
   ],
-  password: [{ required: true, message: "请输入正确的密码" }],
+  password: [{ required: true, message: "请输入正确的密码" },
+  { validator: proxy.Verify.password, message: "请输入正确的密码" }],
   nickName: [{ required: true, message: "请输入正确的昵称" }],
   registerPassword: [
     { required: true, message: "请输入正确的密码" },
@@ -208,11 +194,9 @@ const rules = {
   ],
 };
 
-// 验证码接口
+
 const api = {
-  checkCode: "/api/checkCode",
-  register: "/register",
-  login: "/login",
+  
 };
 
 //操作类型0.注册 1.登录 2.忘记密码

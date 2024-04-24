@@ -20,6 +20,7 @@ import Confirm from './utils/Confirm'
 
 //自定义组件
 import Table from '@/components/Table.vue'
+import Icon from '@/components/Icon.vue'
 
 const app = createApp(App)
 
@@ -28,6 +29,7 @@ app.use(ElementPlus)
 app.use(router)
 
 app.component("Table", Table);
+app.component("Icon", Icon);
 
 //配置全局组件
 app.config.globalProperties.Verify=Verify;
@@ -35,4 +37,8 @@ app.config.globalProperties.Message=Message;
 app.config.globalProperties.Request=Request;
 app.config.globalProperties.Request=Confirm;
 app.config.globalProperties.VueCookies=VueCookies;
+app.config.globalProperties.globaInfo = {
+    avatarUrl:"/api/getAvatar/",
+    imageUrl:"api/file/getImage/"
+}
 app.mount('#app')
