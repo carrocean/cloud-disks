@@ -3,7 +3,7 @@
         <div class="header">
             <div class="logo">
                 <span class="iconfont icon-pan"></span>
-                <div class="name">Easy云盘</div>
+                <div class="name">606网盘</div>
             </div>
             <div class="right-panel">
                 <el-popover :width="800" trigger="click" :v-model:visible="true" :offset="20" transition="none"

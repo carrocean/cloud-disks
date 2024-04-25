@@ -9,7 +9,7 @@
         ref="formDataRef"
         @submit.prevent
       >
-        <div class="login-title">云盘</div>
+        <div class="login-title">606网盘</div>
         <!-- 账号 -->
         <el-form-item prop="UserName">
           <el-input
@@ -304,7 +304,7 @@ const restForm = () => {
 .login-body {
   height: calc(100vh);
   background-size: cover;
-  background-image: url("../assets/cropped-1920-1080-1064066.png");
+  background-image: url("../assets/login背景.jpg");
   // background-color: rgb(16, 131, 232);
   display: flex;
 }
