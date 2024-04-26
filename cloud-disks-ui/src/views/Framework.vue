@@ -181,7 +181,7 @@ const currentMenu = ref({});
 const currentPath = ref();
 
 const loginout = () => {
-    router.push("./Login")
+    router.push("/Login")
 }
 
 const jump = (data)=>{
