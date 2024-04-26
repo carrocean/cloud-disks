@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.common.services.IBaseService;
+import com.example.dto.UserDto;
 import com.example.entity.UserEntity;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public interface IUserService extends IBaseService<UserEntity> {
      * @param password  密码
      * @return
      */
-    UserEntity registAccount(String loginName, String password);
+    UserDto registAccount(String loginName, String password);
 
     /**
      * 校验账号是否存在
@@ -67,5 +68,5 @@ public interface IUserService extends IBaseService<UserEntity> {
      * @param password
      * @return
      */
-    UserEntity loginAccount(String username, String password);
+    UserDto loginAccount(String username, String password);
 }
