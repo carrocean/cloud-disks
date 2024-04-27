@@ -2,14 +2,14 @@
     <div class="framework">
         <div class="header">
             <div class="logo">
-                <span class="iconfont icon-pan"></span>
-                <div class="name">606网盘</div>
+                <span><img src="../assets/云.svg"></span>
+                <div class="name">QST网盘</div>
             </div>
             <div class="right-panel">
                 <el-popover :width="800" trigger="click" :v-model:visible="true" :offset="20" transition="none"
                     :hide-after="0" :popper-style="{ padding: '0px' }">
                     <template #reference>
-                        <span class="iconfont icon-transfer"></span>
+                        <span class="download"><img src="../assets/下载.svg" alt=""></span>
                     </template>
                     <template #default>
                         这里是上传界面区域
@@ -23,7 +23,7 @@
                     </div>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item>修改头像</el-dropdown-item>
+                            <!-- <el-dropdown-item>修改头像</el-dropdown-item> -->
                             <el-dropdown-item>修改密码</el-dropdown-item>
                             <el-dropdown-item @click="loginout">退出</el-dropdown-item>
                         </el-dropdown-menu>
@@ -45,7 +45,7 @@
                     :class="['menu-item-sub',currentPath==sub.path?'active':'']" 
                     v-for="sub in currentMenu.children"
                     >
-                        <span class="['iconfont', 'icon-' + sub.icon]" v-if="sub.icon">
+                        <span :class="['iconfont', 'icon-' + sub.icon]" v-if="sub.icon">
                         </span>
                         <span class="text">{{ sub.name }}</span>
                     </div>
@@ -127,25 +127,13 @@ const menus = [
             },
         ],
     },
-    {
-        path: "/myshare",
-        icon: "share",
-        name: "分享",
-        menuCode: "share",
-        allShow: true,
-        children: [
-            {
-                name: "分享记录",
-                path: "/myshare",
-            },
-        ],
-    },
+    
     {
         path: "/recycle",
         icon: "del",
         name: "回收站",
         menuCode: "recycle",
-        tips: "回收站为你保存10天内删除的文件",
+        tips: "",
         allShow: true,
         children: [
             {
@@ -154,34 +142,15 @@ const menus = [
             },
         ],
     },
-    {
-        path: "/settings/fileList",
-        icon: "settings",
-        name: "设置",
-        menuCode: "settings",
-        allShow: false,
-        children: [
-            {
-                name: "用户文件",
-                path: "/settings/fileList",
-            },
-            {
-                name: "用户管理",
-                path: "/settings/userList",
-            },
-            {
-                name: "系统设置",
-                path: "/settings/sysSetting",
-            },
-        ],
-    },
+   
 ];
 
 const currentMenu = ref({});
 const currentPath = ref();
 
 const loginout = () => {
-    router.push("./Login")
+    proxy.Message.success("退出成功");
+    router.push("/Login")
 }
 
 const jump = (data)=>{
@@ -212,6 +181,7 @@ watch(()=>route,(newVal,oldVal)=>{
 
 <style lang="scss" scoped>
 .header {
+    text-align: center;
     background-color: #05a1f5;
     box-shadow: 0 3px 3px 0 #44b4f1;
     height: 56px;
@@ -222,11 +192,11 @@ watch(()=>route,(newVal,oldVal)=>{
     display: flex;
     align-items: center;
     justify-content: space-between;
-
+    
     .logo {
         display: flex;
         align-items: center;
-
+        margin: auto;
         .icon-pan {
             font-size: 40px;
             color: #ffffff;
@@ -237,6 +207,8 @@ watch(()=>route,(newVal,oldVal)=>{
             margin-left: 5px;
             font-size: 25px;
             color: #ffffff;
+            
+            
         }
     }
 
@@ -244,10 +216,12 @@ watch(()=>route,(newVal,oldVal)=>{
         display: flex;
         align-items: center;
 
-        .icon-transfer {
-            cursor: pointer;
+        .download {
+            img {
+                width: 20px;
+                height: 20px;
+            }
         }
-
         .user-info {
             margin-right: 10px;
             display: flex;

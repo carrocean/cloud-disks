@@ -42,15 +42,6 @@ const router = createRouter({
         },
         
         {
-          path:"/myshare",
-          name:'我的分享',
-          meta:{
-            needLogin: true,
-            menuCode:"share"
-          },
-          component:() => import("../views/share/Share.vue")
-        },
-        {
           path:"/recycle",
           name:'回收站',
           meta:{
@@ -59,33 +50,7 @@ const router = createRouter({
           },
           component:() => import("../views/recycle/Recycle.vue")
         },
-        {
-          path:"/settings/sysSetting",
-          name:'系统设置',
-          meta:{
-            needLogin: true,
-            menuCode:"settings"
-          },
-          component:() => import("../views/admin/SysSettings.vue")
-        },
-        {
-          path:"/settings/userList",
-          name:'用户管理',
-          meta:{
-            needLogin: true,
-            menuCode:"settings"
-          },
-          component:() => import("../views/admin/UserList.vue")
-        },
-        {
-          path:"/settings/fileList",
-          name:'用户文件',
-          meta:{
-            needLogin: true,
-            menuCode:"settings"
-          },
-          component:() => import("../views/admin/FileList.vue")
-        },
+        
       ]
     }
   ]

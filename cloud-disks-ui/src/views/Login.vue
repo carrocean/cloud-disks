@@ -9,7 +9,7 @@
         ref="formDataRef"
         @submit.prevent
       >
-        <div class="login-title">606网盘</div>
+        <div class="login-title">QST网盘</div>
         <!-- 账号 -->
         <el-form-item prop="UserName">
           <el-input
