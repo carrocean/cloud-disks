@@ -227,7 +227,11 @@ const restForm = () => {
   const doSubmit = () => {
     if(opType.value==1)
     {
+      setTimeout(() => {
+      proxy.Message.success("登录成功");
       router.push("./Framework");
+    }, 500);
+      
     }
     else if(opType.value==0)
     {

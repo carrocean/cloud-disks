@@ -212,7 +212,8 @@ watch(()=>route,(newVal,oldVal)=>{
 
 <style lang="scss" scoped>
 .header {
-    box-shadow: 0 3px 10px 0 rgb(0 0 0/6%);
+    background-color: #05a1f5;
+    box-shadow: 0 3px 3px 0 #44b4f1;
     height: 56px;
     padding-left: 24px;
     padding-right: 24px;
@@ -228,14 +229,14 @@ watch(()=>route,(newVal,oldVal)=>{
 
         .icon-pan {
             font-size: 40px;
-            color: #1296db;
+            color: #ffffff;
         }
 
         .name {
             font-weight: bold;
             margin-left: 5px;
             font-size: 25px;
-            color: #05a1f5;
+            color: #ffffff;
         }
     }
 
@@ -258,7 +259,7 @@ watch(()=>route,(newVal,oldVal)=>{
             }
 
             .nick-name {
-                color: #05a1f5;
+                color: #ffffff;
             }
         }
     }
@@ -268,13 +269,14 @@ watch(()=>route,(newVal,oldVal)=>{
     display: flex;
 
     .left-sider {
+        background-color:rgb(5, 161, 245);
         border-right: 1px solid #f1f2f4;
         display: flex;
 
         .menu-list {
             height: calc(100vh - 56px);
             width: 80px;
-            box-shadow: 0 3px 10px 0 rgb(0 0 0/6%);
+            box-shadow: 0 3px 10px 0 rgba(249, 246, 246, 0.945);
             border-right: 1px solid #f1f3f4;
 
             .menu-item {
@@ -283,25 +285,29 @@ watch(()=>route,(newVal,oldVal)=>{
                 font-weight: bold;
                 padding: 20px 0px;
                 cursor: pointer;
+                color: #eef9fe;
                 &:hover {
-                    background: #f3f3f3;
+                    background: rgb(3, 144, 219);
                 }
 
                 .iconfont {
                     font-weight: normal;
                     font-size: 28px;
+                    color: #eef9fe;
+                    
                 }
+                
             }
 
             .active {
                 
                 .iconfont {
-                    color: #06a7ff;
+                    color: #fdfdfd;
 
                 }
 
                 .text {
-                    color: #06a7ff;
+                    color: #ffffff;
                 }
             }
         }
@@ -310,12 +316,14 @@ watch(()=>route,(newVal,oldVal)=>{
             width: 200px;
             padding: 20px 10px 0px;
             position: relative;
+            background-color: #f1f2f4;
 
             .menu-item-sub {
                 text-align: center;
                 line-height: 40px;
                 border-radius: 5px;
                 cursor: pointer;
+                
 
                 &:hover {
                     background: #f3f3f3;
@@ -324,6 +332,7 @@ watch(()=>route,(newVal,oldVal)=>{
                 .iconfont {
                     font-size: 14px;
                     margin-right: 20px;
+                    
                 }
 
                 .text {
