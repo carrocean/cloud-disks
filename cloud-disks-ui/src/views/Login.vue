@@ -9,7 +9,7 @@
         ref="formDataRef"
         @submit.prevent
       >
-        <div class="login-title">606网盘</div>
+        <div class="login-title">QST网盘</div>
         <!-- 账号 -->
         <el-form-item prop="UserName">
           <el-input
@@ -227,7 +227,11 @@ const restForm = () => {
   const doSubmit = () => {
     if(opType.value==1)
     {
+      setTimeout(() => {
+      proxy.Message.success("登录成功");
       router.push("./Framework");
+    }, 500);
+      
     }
     else if(opType.value==0)
     {

@@ -10,32 +10,25 @@
           :http-request="addFile"
           :accept="fileAccept"
           >
-            <el-button type="primary">
+            <el-button >
               <span class="iconfont icon-upload"> </span>
               上传
             </el-button>
           </el-upload>
         </div>
-        <el-button type="success">
+        <el-button>
           <span class="iconfont icon-folder-add"></span>
           新建文件夹
         </el-button>
-        <el-button type="danger">
+        <el-button >
           <span class="iconfont icon-del"></span>
           批量删除
         </el-button>
-        <el-button type="warning">
-          <span class="iconfont icon-del"></span>
+        <el-button >
+          <span><img src="@/assets/平移.svg"></span>
           批量移动
         </el-button>
-        <div class="search-panel">
-          <el-input clearable placeholder="提示信息">
-            <template #suffix>
-              <i class="iconfont icon-search"></i>
-            </template>
-          </el-input>
-        </div>
-        <div class="iconfont icon-refresh"></div>    
+        <!-- <div class="iconfont icon-refresh"></div>     -->
       </div>
       <!--导航-->
       <div style="padding-left: 20px; ">全部文件</div>
