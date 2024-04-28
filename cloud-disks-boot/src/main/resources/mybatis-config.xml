@@ -1,0 +1,18 @@
+<configuration>
+    <!-- 通过properties标签，读取java配置文件的内容 -->
+    <properties resource="application.yml" />
+    <!-- 配置mybatis的环境信息 -->
+    <environments default="development">
+        <environment id="development">
+            <!-- 配置JDBC事务控制，由mtybatis进行管理 -->
+            <transactionManager type="JDBC"></transactionManager>
+            <!-- 配置数据源，采用dbcp连接池 -->
+            <dataSource type="POOLED">
+                <property name="driver" value="${spring.datasource.driver-class-name}" />
+                <property name="url" value="${spring.datasource.url}" />
+                <property name="username" value="${spring.datasource.username}" />
+                <property name="password" value="${spring.datasource.password}" />
+            </dataSource>
+        </environment>
+    </environments>
+</configuration>

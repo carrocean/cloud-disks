@@ -1,0 +1,4 @@
+<!-- UserMapper.xml -->
+<mapper namespace="com.example.mapper.UserMapper">
+
+</mapper>
