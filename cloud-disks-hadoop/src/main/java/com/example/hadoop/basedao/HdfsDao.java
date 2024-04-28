@@ -1,5 +1,7 @@
 package com.example.hadoop.basedao;
 
+import com.example.entity.FileEntity;
+import com.example.entity.UserEntity;
 import com.example.hadoop.conn.HdfsConn;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileUtil;
@@ -13,33 +15,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.example.entity.User;
-import com.example.entity.File;
 @Repository("hdfsDao")
 public class HdfsDao {
-    private final String basePath = "/OnlineDisk/";
+    private final String basePath = "/";
 
     /**
-     * 获得在hdfs中的目录
+     * 格式化文件目录
      *
-     * @param file
-     * @param user
+     * @param fileEntity
+     * @param userEntity
      * @return
      */
-    private String formatPathMethod(User user, File file) {
-        return basePath + user.getName() + file.getPath();
+    private String formatPathMethod(UserEntity userEntity, FileEntity fileEntity) {
+        return basePath + userEntity.getName() + "/" + fileEntity.getPath();
     }
 
     /**
      * 上传文件
      *
      * @param inputStream
-     * @param file
-     * @param user
+     * @param fileEntity
+     * @param userEntity
      */
-    public void put(InputStream inputStream, File file, User user) {
+    public void put(InputStream inputStream, FileEntity fileEntity, UserEntity userEntity) {
         try {
-            String formatPath = formatPathMethod(user, file);
+            String formatPath = formatPathMethod(userEntity, fileEntity);
             OutputStream outputStream = HdfsConn.getFileSystem().create(new Path(formatPath), new Progressable() {
                 @Override
                 public void progress() {
@@ -57,12 +57,12 @@ public class HdfsDao {
     /**
      * 创建文件夹
      *
-     * @param file
-     * @param user
+     * @param fileEntity
+     * @param userEntity
      */
-    public void mkDir(File file, User user) {
+    public void mkDir(FileEntity fileEntity, UserEntity userEntity) {
         try {
-            String formatPath = formatPathMethod(user, file);
+            String formatPath = formatPathMethod(userEntity, fileEntity);
             if (!HdfsConn.getFileSystem().exists(new Path(formatPath))) {
                 HdfsConn.getFileSystem().mkdirs(new Path(formatPath));
             }
@@ -76,12 +76,12 @@ public class HdfsDao {
     /**
      * 删除文件或目录
      *
-     * @param file
-     * @param user
+     * @param fileEntity
+     * @param userEntity
      */
-    public void delete(File file, User user) {
+    public void delete(FileEntity fileEntity, UserEntity userEntity) {
         try {
-            String formatPath = formatPathMethod(user, file);
+            String formatPath = formatPathMethod(userEntity, fileEntity);
             if (HdfsConn.getFileSystem().exists(new Path(formatPath))) {
                 HdfsConn.getFileSystem().delete(new Path(formatPath), true);
             }
@@ -95,15 +95,15 @@ public class HdfsDao {
     /**
      * 重命名文件，未使用
      *
-     * @param file
-     * @param user
+     * @param fileEntity
+     * @param userEntity
      * @param newname
      */
-    public void rename(File file, User user, String newname) {
+    public void rename(FileEntity fileEntity, UserEntity userEntity, String newname) {
         try {
-            String formatPath = formatPathMethod(user, file);
-            file.setName(newname);
-            String newformatPath = formatPathMethod(user, file);
+            String formatPath = formatPathMethod(userEntity, fileEntity);
+            fileEntity.setName(newname);
+            String newformatPath = formatPathMethod(userEntity, fileEntity);
             if (HdfsConn.getFileSystem().exists(new Path(formatPath))) {
                 HdfsConn.getFileSystem().rename(new Path(formatPath), new Path(newformatPath));
             }
@@ -117,13 +117,13 @@ public class HdfsDao {
     /**
      * 下载文件
      *
-     * @param user
-     * @param file
+     * @param userEntity
+     * @param fileEntity
      * @param local
      */
-    public boolean download(User user, File file, String local) {
+    public boolean download(UserEntity userEntity, FileEntity fileEntity, String local) {
         try {
-            String formatPath = formatPathMethod(user, file);
+            String formatPath = formatPathMethod(userEntity, fileEntity);
             if (HdfsConn.getFileSystem().exists(new Path(formatPath))) {
                 FSDataInputStream inputStream = HdfsConn.getFileSystem().open(new Path(formatPath));
                 OutputStream outputStream = new FileOutputStream(local);
@@ -143,15 +143,15 @@ public class HdfsDao {
     /**
      * 复制或者移动文件或者目录
      *
-     * @param user
-     * @param sourceFile
-     * @param destFile
+     * @param userEntity
+     * @param sourceFileEntity
+     * @param destFileEntity
      * @param flag
      */
-    public void copyOrMove(User user, File sourceFile, File destFile, boolean flag) {
+    public void copyOrMove(UserEntity userEntity, FileEntity sourceFileEntity, FileEntity destFileEntity, boolean flag) {
         try {
-            String sourceFormatPath = formatPathMethod(user, sourceFile);
-            String destFormatPath = formatPathMethod(user, destFile);
+            String sourceFormatPath = formatPathMethod(userEntity, sourceFileEntity);
+            String destFormatPath = formatPathMethod(userEntity, destFileEntity);
             FileUtil.copy(HdfsConn.getFileSystem(), new Path(sourceFormatPath), HdfsConn.getFileSystem(), new Path(destFormatPath), flag, true, HdfsConn.getConfiguration());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

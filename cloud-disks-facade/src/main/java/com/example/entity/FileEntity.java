@@ -1,6 +1,6 @@
 package com.example.entity;
 
-public class File {
+public class FileEntity {
 	private long id; // 序号
 	private String originalName; // 原文件名
 	private String name; // 存储在HDFS中的文件名
