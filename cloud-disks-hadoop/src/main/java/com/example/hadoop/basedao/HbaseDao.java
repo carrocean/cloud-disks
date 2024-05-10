@@ -1,6 +1,8 @@
 package com.example.hadoop.basedao;
 
 import com.example.hadoop.conn.HbaseConn;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.Filter;
@@ -11,27 +13,32 @@ import java.io.IOException;
 
 @Repository("hbaseDao")
 public class HbaseDao {
-    /**
-     * 计数器
-     * @param tableName
-     * @param rowKey
-     * @param family
-     * @param column
-     * @param range
-     * @return long
-     * @throws IOException
-     */
-    public long incrCounter(String tableName, String rowKey,  String family, String column, long range) {
-    	long count = 0l;
-		try {
-			Table table = HbaseConn.getConn().getTable(TableName.valueOf(tableName));
-			count = table.incrementColumnValue(Bytes.toBytes(rowKey), Bytes.toBytes(family), Bytes.toBytes(column), range);
-			table.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+
+	/**
+	 * 创建表
+	 * @category create 'tableName','family1','family2','family3'
+	 * @param tableName
+	 * @param family
+	 * @throws Exception
+	 */
+	public static void createTable(String tableName, String[] family) throws IOException {
+		Admin admin = HbaseConn.getConn().getAdmin();
+
+		TableName tn = TableName.valueOf(tableName);
+		HTableDescriptor desc = new HTableDescriptor(tn);
+		for (int i = 0; i < family.length; i++) {
+			desc.addFamily(new HColumnDescriptor(family[i]));
 		}
-		return count;
-    }
+		if (admin.tableExists(tn)) {
+			System.out.println("createTable => table Exists!");
+			admin.disableTable(tn);
+			admin.deleteTable(tn);
+			admin.createTable(desc);
+		} else {
+			admin.createTable(desc);
+			System.out.println("createTable => create Success! => " + tn);
+		}
+	}
 
     /**
      * 插入或修改一条数据，针对列族中有一个列，value为long类型
