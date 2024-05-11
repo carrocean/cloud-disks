@@ -1,9 +1,10 @@
-package com.example.demo.mapper;
+package com.example.mapper;
 
-import com.example.demo.User;
+import com.example.entity.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
 
 public interface UserMapper {
     @Select("SELECT * from user where UserName=#{name} and Pwd=#{password}")
