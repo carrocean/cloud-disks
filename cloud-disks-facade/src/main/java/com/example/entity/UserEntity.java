@@ -4,8 +4,9 @@ import lombok.Data;
 
 @Data
 public class UserEntity {
-	private long id; // 编号
+	private Integer userId; // 编号
 	private String pwd; // 密码
-	private String name; // 姓名
+	private String userName; // 姓名
+	private String token;
 	
 }
