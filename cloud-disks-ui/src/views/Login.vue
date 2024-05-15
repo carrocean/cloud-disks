@@ -104,36 +104,12 @@
 import { useRoute, useRouter } from "vue-router";
 import { ref, reactive, getCurrentInstance, nextTick } from "vue";
 // import md5 from "js-md5";
-// import {loginApi, registerApi} from "@/api/login.js"
+import {login, register} from "@/api/user.js"
 import axios from 'axios';
+import {ElMessage} from "element-plus";
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-// 创建一个axios实例
-const instance = axios.create({
-  baseURL: '/api', // 设置API的基础URL
-  timeout: 1000, // 设置请求超时时间
-  // 可以添加更多配置，如headers等
-});
-
-// 添加请求拦截器
-instance.interceptors.request.use(config => {
-  // 在发送请求之前做些什么
-  config.headers.Authorization = `Bearer ${window.sessionStorage.getItem('token')}`;
-  return config;
-}, error => {
-  // 对请求错误做些什么
-  return Promise.reject(error);
-});
-
-// 添加响应拦截器
-instance.interceptors.response.use(response => {
-  // 对响应数据做点什么
-  return response;
-}, error => {
-  // 对响应错误做点什么
-  return Promise.reject(error);
-});
 
 
 const checkRePassword = (rule, value, callback) => {
@@ -220,23 +196,21 @@ const showPanel = (type) => {
     let response = null;
     if (opType.value === 1) {
       // 登录操作
-      response = await instance.post('/login', formData.value);
-      console.log('login response', response);
-      if (response.data.status === 0) {
-        // 登录成功处理逻辑
+      login(formData.value).then(res=>{
         ElMessage.success(response.data.message);
         window.sessionStorage.setItem('token', response.data.token);
         router.push('/Framework');
-      }
+      }).catch(err=>{
+        //请求失败，做相应处理
+      })
     } else if (opType.value === 0) {
       // 注册操作
-      response = await axios.post('/register', formData.value);
-      console.log('register response', response);
-      if (response.data.status === 0) {
-        // 注册成功处理逻辑
+      register(formData.value).then(res=>{
         ElMessage.success(response.data.message);
         showPanel(1); // 假设showPanel(1)会将表单切换到登录面板
-      }
+      }).catch(err=>{
+        //请求失败，做相应处理
+      })
     }
     // 可以根据需要添加更多操作类型的情况
   } catch (error) {
