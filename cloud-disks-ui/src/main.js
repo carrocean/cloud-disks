@@ -22,14 +22,12 @@ import Confirm from './utils/Confirm'
 import Table from '@/components/Table.vue'
 import Icon from '@/components/Icon.vue'
 
-import axios from 'axios'
 
 const app = createApp(App)
 
 
 app.use(ElementPlus)
 app.use(router)
-app.use(axios)
 app.component("Table", Table);
 app.component("Icon", Icon);
 
