@@ -12,7 +12,7 @@ const responseTypeJson= "json"
 
 let loading=null;
 const instance =axios.create({
-    baseURL:'/api',
+    baseURL:'http://localhost:30001',
     timeout:10*1000,
 })
 //请求拦截
@@ -69,38 +69,6 @@ instance.interceptors.response.use(
     }
 );
 
-const request = (config)=> {
-    const {url,params,dataType,showLoading=true,responseType=responseTypeJson}=config;
-    let contentType=contentTypeForm;
-    let formData = new FormData();//创建form对象
-    for(let key in params) {
-        formData.append(key,params[key]==undefined?"" :params[key]);
-    }
-    if(dataType!=null && dataType=='json') {
-        contentType = contentTypeJson;
-    }
-    let headers={
-        'Content-Type':contentType,
-        'X-Requeste-With' :'XMLHttpRequest',
-    }
-    return instance.post(url,formData, {
-        onUploadProgress:(event)=>{
-            if(config.uploadProgressCallback) {
-                config.uploadProgressCallback(event);
-            }
-        },
-        responseType:responseType,
-        headers:headers,
-        showLoading:showLoading,
-        errorCallback:config.errorCallback,
-        showError:config.showError
-    }).catch(error=> {
-        console.log(error);
-        if(error.showError){
-            Message.error(error.msg)
-        }
-        return null;
-    });
-};
-
-export default request;
+export function request(config) {
+    return instance(config);
+}

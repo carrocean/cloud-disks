@@ -2,14 +2,12 @@ package com.example.gateway.controller;
 
 import com.example.entity.UserEntity;
 import com.example.service.impl.UserServiceImpl;
-import com.example.util.JwtUtil;
 import com.example.mapper.UserMapper;
 import com.example.util.Result;
 import com.example.util.ResultGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RestController;
