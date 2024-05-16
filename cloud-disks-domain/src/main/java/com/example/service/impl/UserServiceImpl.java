@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
         return dbuser;
     }
     @Override
-    public String regiestService( UserEntity newUser){
+    public String registerService( UserEntity newUser){
         String name=userMapper.getNameByName(newUser.getUserName());
         if(name==null){
             userMapper.save(newUser.getUserName(),newUser.getPwd(),newUser.getEmail(),newUser.getNickName());
