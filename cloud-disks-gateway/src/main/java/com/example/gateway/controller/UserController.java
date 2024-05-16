@@ -1,8 +1,11 @@
 package com.example.gateway.controller;
+
 import com.example.entity.UserEntity;
 import com.example.service.impl.UserServiceImpl;
 import com.example.util.JwtUtil;
 import com.example.mapper.UserMapper;
+import com.example.util.Result;
+import com.example.util.ResultGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,19 +23,34 @@ public class UserController {
     @Autowired
     UserServiceImpl userServiceImpl;
     UserMapper userMapper;
+
     @PostMapping("/login")
-    public UserEntity login(@RequestBody UserEntity newUser){
-return userServiceImpl.loginService(newUser);
+    public Result login(@RequestBody UserEntity newUser) {
+        Result result;
+        UserEntity dbUser = userServiceImpl.loginService(newUser);
+        if (dbUser != null)
+            result = ResultGenerator.getSuccessResult(dbUser);
+        else result = ResultGenerator.getFailResult("登录失败");
+        return result;
     }
-    @PostMapping("/regiest")
-    public String regiest(@RequestBody UserEntity newUser){
-       return userServiceImpl.regiestService(newUser);
-        }
-        @GetMapping("/checkToken")
-    public Boolean checkToken(HttpServletRequest request){
-return userServiceImpl.checkTokenService(request);
-        }
+
+    @PostMapping("/register")
+    public Result register(@RequestBody UserEntity newUser) {
+        Result result;
+        String msg = userServiceImpl.registerService(newUser);
+        if (msg.equals("注册成功")) result = ResultGenerator.getSuccessResult();
+        else result = ResultGenerator.getFailResult("注册失败");
+        return result;
     }
+
+    @GetMapping("/checkToken")
+    public Result checkToken(HttpServletRequest request) {
+        Result result;
+        if (userServiceImpl.checkTokenService(request)) result = ResultGenerator.getSuccessResult();
+        else result = ResultGenerator.getFailResult("未认证");
+        return result;
+    }
+}
 
 
 
