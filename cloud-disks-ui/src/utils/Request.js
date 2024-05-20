@@ -37,35 +37,14 @@ instance.interceptors.request.use(
 );
 //请求后拦截器
 instance.interceptors.response.use(
-    (response) => {
-        const {showLoading,errorCllback,showError=true,responseType} =response.config;
-        if(showLoading && loading) {
-            loading.close()
-        }
-        const responseData = response.data;
-        if(responseType=='arraybuffer'||responseType=="blob") {
-            return responseData;
-        }
-        //正常请求
-        if(responseData.code==200){
-            return responseData;
-        }else if (responseData.code==901) {
-            //登录超时
-            router.push("/login?redirectUrl="+encodeURI(router.currentRoute.value.path));
-            return Promise.reject({showError:false,msg:"登录超时"});
-        }else {
-            //其他错误
-            if(errorCallback){
-                errorCallback(responseData.info);
-            }
-            return Promise.reject({ showError:showError,msg:responseData.info});
-        }
+    (res) => {
+        return res.data;
     },
     (error) => {
         if(error.config.showLoading&&loading) {
             loading.close();
         }
-        return Promise.reject({showError:true,msg:网络异常});
+        return Promise.reject({showError:true,msg:"网络异常"});
     }
 );
 
