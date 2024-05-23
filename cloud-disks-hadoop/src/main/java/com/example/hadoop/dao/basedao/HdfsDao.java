@@ -27,7 +27,7 @@ public class HdfsDao {
      * @return
      */
     private String formatPathMethod(UserEntity userEntity, FileEntity fileEntity) {
-        return basePath + userEntity.getName() + "/" + fileEntity.getPath();
+        return basePath + userEntity.getUserName() + "/" + fileEntity.getPath();
     }
 
     /**
