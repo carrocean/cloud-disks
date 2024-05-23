@@ -12,7 +12,7 @@ const responseTypeJson= "json"
 
 let loading=null;
 const instance =axios.create({
-    baseURL:'/api',
+    baseURL:'http://localhost:30001',
     timeout:10*1000,
 })
 //请求拦截
@@ -37,70 +37,17 @@ instance.interceptors.request.use(
 );
 //请求后拦截器
 instance.interceptors.response.use(
-    (response) => {
-        const {showLoading,errorCllback,showError=true,responseType} =response.config;
-        if(showLoading && loading) {
-            loading.close()
-        }
-        const responseData = response.data;
-        if(responseType=='arraybuffer'||responseType=="blob") {
-            return responseData;
-        }
-        //正常请求
-        if(responseData.code==200){
-            return responseData;
-        }else if (responseData.code==901) {
-            //登录超时
-            router.push("/login?redirectUrl="+encodeURI(router.currentRoute.value.path));
-            return Promise.reject({showError:false,msg:"登录超时"});
-        }else {
-            //其他错误
-            if(errorCallback){
-                errorCallback(responseData.info);
-            }
-            return Promise.reject({ showError:showError,msg:responseData.info});
-        }
+    (res) => {
+        return res.data;
     },
     (error) => {
         if(error.config.showLoading&&loading) {
             loading.close();
         }
-        return Promise.reject({showError:true,msg:网络异常});
+        return Promise.reject({showError:true,msg:"网络异常"});
     }
 );
 
-const request = (config)=> {
-    const {url,params,dataType,showLoading=true,responseType=responseTypeJson}=config;
-    let contentType=contentTypeForm;
-    let formData = new FormData();//创建form对象
-    for(let key in params) {
-        formData.append(key,params[key]==undefined?"" :params[key]);
-    }
-    if(dataType!=null && dataType=='json') {
-        contentType = contentTypeJson;
-    }
-    let headers={
-        'Content-Type':contentType,
-        'X-Requeste-With' :'XMLHttpRequest',
-    }
-    return instance.post(url,formData, {
-        onUploadProgress:(event)=>{
-            if(config.uploadProgressCallback) {
-                config.uploadProgressCallback(event);
-            }
-        },
-        responseType:responseType,
-        headers:headers,
-        showLoading:showLoading,
-        errorCallback:config.errorCallback,
-        showError:config.showError
-    }).catch(error=> {
-        console.log(error);
-        if(error.showError){
-            Message.error(error.msg)
-        }
-        return null;
-    });
-};
-
-export default request;
+export function request(config) {
+    return instance(config);
+}

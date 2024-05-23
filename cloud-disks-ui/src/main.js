@@ -15,7 +15,6 @@ import { VueCookies } from 'vue-cookies'
 
 import Verify from './utils/Verify'
 import Message from './utils/Message'
-import Request from './utils/Request'
 import Confirm from './utils/Confirm'
 
 //自定义组件
