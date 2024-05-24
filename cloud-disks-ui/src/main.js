@@ -16,7 +16,7 @@ import { VueCookies } from 'vue-cookies'
 import Verify from './utils/Verify'
 import Message from './utils/Message'
 import Confirm from './utils/Confirm'
-
+import Utils from './utils/Utils'
 //自定义组件
 import Table from '@/components/Table.vue'
 import Icon from '@/components/Icon.vue'
@@ -34,6 +34,7 @@ app.component("Icon", Icon);
 app.config.globalProperties.Verify=Verify;
 app.config.globalProperties.Message=Message;
 app.config.globalProperties.Request=Request;
-app.config.globalProperties.Request=Confirm;
+app.config.globalProperties.Confirm=Confirm;
+app.config.globalProperties.Utils=Utils;
 app.config.globalProperties.VueCookies=VueCookies;
 app.mount('#app')

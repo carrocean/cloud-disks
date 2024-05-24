@@ -6,13 +6,15 @@
                 <div class="name">QST网盘</div>
             </div>
             <div class="right-panel">
-                <el-popover :width="800" trigger="click" :v-model:visible="true" :offset="20" transition="none"
+                <el-popover :width="800" trigger="click" v-model:visible="showUploader" :offset="20" transition="none"
                     :hide-after="0" :popper-style="{ padding: '0px' }">
                     <template #reference>
                         <span class="download"><img src="../assets/下载.svg" alt=""></span>
                     </template>
                     <template #default>
-                        这里是上传界面区域
+                        <Uploader ref="uploaderRef">
+
+                        </Uploader>
                     </template>
                 </el-popover>
 
@@ -60,7 +62,7 @@
             </div>
             <div class="body-content">
                 <router-view v-slot="{Component}">
-                    <component :is="Component">
+                    <component :is="Component" @addFile="addFile">
 
                     </component>
                 </router-view>
@@ -72,9 +74,19 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, nextTick, watch } from "vue";
 import { useRouter,useRoute } from "vue-router";
+
+import Uploader from "./main/Uploader.vue";
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const route = useRoute();
+const showUploader=ref(false);
+const uploaderRef=ref();
+//添加文件
+const addFile=(data)=> {
+    const {file,filePid} =data;
+    showUploader.value=true;
+    uploaderRef.value.addFile(file,filePid);
+};
 
 const userInfo = ref({
     nickName: "张三",
