@@ -367,7 +367,7 @@ public class FileController {
      * @param path
      * @return
      */
-    @RequestMapping("downloadFile")
+    @RequestMapping("/downloadFile")
     public String downloadFile(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request,
                                @RequestParam(value = "name") String name,
                                @RequestParam(value = "originalName") String originalName,

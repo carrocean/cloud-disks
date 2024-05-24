@@ -13,7 +13,7 @@ export function login(data) {
     return request({
         url: managerUrl.login,
         method: 'post',
-        data,
+        data:data,
     })
 }
 
@@ -21,6 +21,6 @@ export function register(data) {
     return request({
         url: managerUrl.register,
         method: 'post',
-        data,
+        data:data,
     })
 }
