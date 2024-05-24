@@ -1,6 +1,6 @@
 import com.example.entity.FileEntity;
 import com.example.entity.UserEntity;
-import com.example.hadoop.basedao.HdfsDao;
+import com.example.hadoop.dao.basedao.HdfsDao;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
@@ -15,7 +15,7 @@ public class HadoopTest {
         FileEntity file = new FileEntity();
         UserEntity user = new UserEntity();
         file.setPath("aaa");
-        user.setName("liHong");
+        user.setUserName("liHong");
         hdfsDao.mkDir(file,user);
     }
 
@@ -25,7 +25,7 @@ public class HadoopTest {
         FileEntity file = new FileEntity();
         UserEntity user = new UserEntity();
         file.setPath("bbb");
-        user.setName("liHong");
+        user.setUserName("liHong");
 
         String filePath = "C:\\Users\\夏和圆周\\Desktop\\zookeeper安装.txt";
 

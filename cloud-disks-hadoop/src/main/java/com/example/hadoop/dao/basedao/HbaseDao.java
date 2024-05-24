@@ -1,4 +1,4 @@
-package com.example.hadoop.basedao;
+package com.example.hadoop.dao.basedao;
 
 import com.example.hadoop.conn.HbaseConn;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -322,4 +322,15 @@ public class HbaseDao {
 			e.printStackTrace();
 		}
     }
+	public long incrCounter(String tableName, String rowKey,  String family, String column, long range) {
+		long count = 0l;
+		try {
+			Table table = HbaseConn.getConn().getTable(TableName.valueOf(tableName));
+			count = table.incrementColumnValue(Bytes.toBytes(rowKey), Bytes.toBytes(family), Bytes.toBytes(column), range);
+			table.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
 }

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/cloud/disks/user")
 public class UserController {
     static Map<Integer, UserEntity> userMap = new HashMap<>();
     @Autowired
