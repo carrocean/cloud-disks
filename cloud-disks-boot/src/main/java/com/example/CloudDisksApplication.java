@@ -7,7 +7,6 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 
 @SpringBootApplication
 @MapperScan("com.example.mapper")
-@ServletComponentScan(basePackages = "com.example.entity")
 public class CloudDisksApplication {
 
     public static void main(String[] args) {

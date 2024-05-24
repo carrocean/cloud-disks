@@ -34,14 +34,15 @@ public class FileController {
 
     /**
      * 列出文件列表
+     *
      * @param httpSession
      * @return
      */
     @RequestMapping("/fileList.do")
     public ModelAndView fileList(HttpSession httpSession,
-                                 @RequestParam(value="dir",defaultValue="/") String dir,
-                                 @RequestParam(value="originalDir",defaultValue="/") String originalDir,
-                                 @RequestParam(value="parentid", defaultValue="0") long parentid) {
+                                 @RequestParam(value = "dir", defaultValue = "/") String dir,
+                                 @RequestParam(value = "originalDir", defaultValue = "/") String originalDir,
+                                 @RequestParam(value = "parentid", defaultValue = "0") long parentid) {
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         List<FileEntity> filelist = fileService.getFileList(user, parentid);
         List<FileEntity> breadcrumblist = fileService.getBreadcrumb(dir);
@@ -56,15 +57,16 @@ public class FileController {
 
     /**
      * 显示上传文件页面弹窗
+     *
      * @param dir
      * @param originalDir
      * @param parentid
      * @return
      */
     @RequestMapping("/showUpload.do")
-    public ModelAndView showUpload(@RequestParam(value="dir") String dir,
-                                   @RequestParam(value="originalDir") String originalDir,
-                                   @RequestParam(value="parentid") long parentid) {
+    public ModelAndView showUpload(@RequestParam(value = "dir") String dir,
+                                   @RequestParam(value = "originalDir") String originalDir,
+                                   @RequestParam(value = "parentid") long parentid) {
         ModelAndView modelAndView = new ModelAndView("/cloud/upload11");
         modelAndView.addObject("dir", dir);
         modelAndView.addObject("originalDir", originalDir);
@@ -74,6 +76,7 @@ public class FileController {
 
     /**
      * 上传文件
+     *
      * @param request
      * @param httpSession
      * @param dir
@@ -82,9 +85,9 @@ public class FileController {
      */
     @RequestMapping("/uploadFile.do")
     public ModelAndView uploadFile(HttpServletRequest request, HttpSession httpSession,
-                                   @RequestParam(value="dir") String dir,
-                                   @RequestParam(value="originalDir") String originalDir,
-                                   @RequestParam(value="parentid") long parentid) throws IOException {
+                                   @RequestParam(value = "dir") String dir,
+                                   @RequestParam(value = "originalDir") String originalDir,
+                                   @RequestParam(value = "parentid") long parentid) throws IOException {
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
         if (multipartResolver.isMultipart(request)) {
@@ -104,10 +107,10 @@ public class FileController {
                 file.setSize(FilesUtil.FormetFileSize(multipartFile.getSize()));
                 file.setOriginalName(multipartFile.getOriginalFilename());
                 file.setName(name);
-                if(dir.equals("/")) {
+                if (dir.equals("/")) {
                     file.setPath(dir + name);
                     file.setOriginalPath(originalDir);
-                }else {
+                } else {
                     file.setPath(dir + "/" + name);
                     file.setOriginalPath(originalDir + "/");
                 }
@@ -129,6 +132,7 @@ public class FileController {
 
     /**
      * 创建文件夹
+     *
      * @param httpSession
      * @param dirName
      * @param parentid
@@ -136,10 +140,10 @@ public class FileController {
      */
     @RequestMapping("/makeFolder.do")
     public ModelAndView makeFolder(HttpServletResponse response, HttpSession httpSession,
-                                   @RequestParam(value="dirName") String dirName,
-                                   @RequestParam(value="originalDir") String originalDir,
-                                   @RequestParam(value="mkdir") String mkdir,
-                                   @RequestParam(value="parentid") long parentid) {
+                                   @RequestParam(value = "dirName") String dirName,
+                                   @RequestParam(value = "originalDir") String originalDir,
+                                   @RequestParam(value = "mkdir") String mkdir,
+                                   @RequestParam(value = "parentid") long parentid) {
         JSONObject result = new JSONObject();
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         FileEntity file = new FileEntity();
@@ -149,10 +153,10 @@ public class FileController {
         file.setName(name);
         file.setOriginalName(mkdir);
         file.setSize("0");
-        if(dirName.equals("/")) {
+        if (dirName.equals("/")) {
             file.setPath(dirName + name);
             file.setOriginalPath(originalDir + mkdir);
-        }else {
+        } else {
             file.setPath(dirName + "/" + name);
             file.setOriginalPath(originalDir + "/" + mkdir);
         }
@@ -161,17 +165,17 @@ public class FileController {
         try {
             boolean flag = true;
             List<FileEntity> fileList = fileService.getFileList(user, parentid);
-            for(FileEntity file2 : fileList) {
-                if(file2.isDir()&&file2.getOriginalName().equals(file.getOriginalName())) {
+            for (FileEntity file2 : fileList) {
+                if (file2.isDir() && file2.getOriginalName().equals(file.getOriginalName())) {
                     flag = false;
                     break;
                 }
             }
-            if(flag) {
+            if (flag) {
                 fileService.makeFolder(file, user, parentid);
                 result.put("errres", true);
                 result.put("errmsg", "创建文件夹成功！");
-            }else {
+            } else {
                 result.put("errres", false);
                 result.put("errmsg", "文件夹已经存在！");
             }
@@ -186,18 +190,16 @@ public class FileController {
 
     /**
      * 删除文件或者文件夹
-     * @param user
+     *
      * @param response
-     * @param dir
-     * @param names
      * @param ids
      * @param parentid
      * @return
      */
     @RequestMapping("/deleteFileOrFolder.do")
     public ModelAndView deleteFileOrFolder(HttpSession httpSession, HttpServletResponse response,
-                                           @RequestParam(value="ids") String ids,
-                                           @RequestParam(value="parentid") long parentid) {
+                                           @RequestParam(value = "ids") String ids,
+                                           @RequestParam(value = "parentid") long parentid) {
         JSONObject result = new JSONObject();
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         try {
@@ -220,6 +222,7 @@ public class FileController {
 
     /**
      * 重命名文件或文件夹
+     *
      * @param response
      * @param id
      * @param name
@@ -229,9 +232,9 @@ public class FileController {
      */
     @RequestMapping("/renameFileOrFolder.do")
     public ModelAndView renameFileOrFolder(HttpSession httpSession, HttpServletResponse response,
-                                           @RequestParam(value="id") long id, @RequestParam(value="name") String name,
-                                           @RequestParam(value="newname") String newname, @RequestParam(value="type") String type,
-                                           @RequestParam(value="parentid") long parentid) {
+                                           @RequestParam(value = "id") long id, @RequestParam(value = "name") String name,
+                                           @RequestParam(value = "newname") String newname, @RequestParam(value = "type") String type,
+                                           @RequestParam(value = "parentid") long parentid) {
         JSONObject result = new JSONObject();
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         FileEntity file = new FileEntity();
@@ -241,17 +244,17 @@ public class FileController {
         try {
             boolean flag = true;
             List<FileEntity> fileList = fileService.getFileList(user, parentid);
-            for(FileEntity file2 : fileList) {
-                if(file2.isDir()&&file2.getOriginalName().equals(newname)) {
+            for (FileEntity file2 : fileList) {
+                if (file2.isDir() && file2.getOriginalName().equals(newname)) {
                     flag = false;
                     break;
                 }
             }
-            if(flag) {
+            if (flag) {
                 fileService.rename(file, newname);
                 result.put("errres", true);
                 result.put("errmsg", "重命名成功！");
-            }else {
+            } else {
                 result.put("errres", false);
                 result.put("errmsg", "文件夹已经存在！");
             }
@@ -266,15 +269,16 @@ public class FileController {
 
     /**
      * 显示目录树
+     *
      * @param ids
      * @param flag
      * @param parentid
      * @return
      */
     @RequestMapping("/showTree.do")
-    public ModelAndView showTree(@RequestParam(value="ids") String ids,
-                                 @RequestParam(value="flag") String flag,
-                                 @RequestParam(value="parentid") long parentid) {
+    public ModelAndView showTree(@RequestParam(value = "ids") String ids,
+                                 @RequestParam(value = "flag") String flag,
+                                 @RequestParam(value = "parentid") long parentid) {
         ModelAndView modelAndView = new ModelAndView("/cloud/tree");
         modelAndView.addObject("ids", ids);
         modelAndView.addObject("flag", flag);
@@ -284,6 +288,7 @@ public class FileController {
 
     /**
      * 获得目录树
+     *
      * @param httpSession
      * @param id
      * @return
@@ -291,17 +296,17 @@ public class FileController {
     @RequestMapping("/tree.do")
     @ResponseBody
     public List<NodeEntity> tree(HttpSession httpSession,
-                           @RequestParam(value="id", defaultValue="0") long id ){
+                                 @RequestParam(value = "id", defaultValue = "0") long id) {
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         List<NodeEntity> result = new ArrayList<NodeEntity>();
-        if(id==0) {
+        if (id == 0) {
             NodeEntity root = new NodeEntity();
             root.setId(id);
             root.setText("根目录");
             List<NodeEntity> nodeList = fileService.getTreeFile(user, id);
             root.setChildren(nodeList);
             result.add(root);
-        }else {
+        } else {
             result = fileService.getTreeFile(user, id);
         }
         return result;
@@ -309,6 +314,7 @@ public class FileController {
 
     /**
      * 复制或者移动文件与目录
+     *
      * @param response
      * @param httpSession
      * @param ids
@@ -319,13 +325,13 @@ public class FileController {
      */
     @RequestMapping("/copyOrMoveFile.do")
     public ModelAndView copyOrMoveFile(HttpServletResponse response, HttpSession httpSession,
-                                       @RequestParam(value="ids") String ids, @RequestParam(value="parentid") long parentid,
-                                       @RequestParam(value="destid") long destid, @RequestParam(value="flag") boolean flag) {
+                                       @RequestParam(value = "ids") String ids, @RequestParam(value = "parentid") long parentid,
+                                       @RequestParam(value = "destid") long destid, @RequestParam(value = "flag") boolean flag) {
         JSONObject result = new JSONObject();
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         try {
             FileEntity destFile = fileService.getFileInfoById(destid);
-            if(destFile==null) {
+            if (destFile == null) {
                 destFile = new FileEntity();
                 destFile.setPath("/");
             }
@@ -334,7 +340,7 @@ public class FileController {
                 FileEntity sourceFile = fileService.getFileInfoById(Long.parseLong(id[i]));
                 fileService.copyOrMoveHdfs(user, sourceFile, destFile, flag);
                 fileService.copyInfoRecursion(user, sourceFile, destid, destFile.getPath());
-                if(flag) {
+                if (flag) {
                     fileService.deleteInfoRecursion(user, sourceFile, parentid);
                 }
             }
@@ -351,6 +357,7 @@ public class FileController {
 
     /**
      * 下载文件
+     *
      * @param response
      * @param httpSession
      * @param request
@@ -360,9 +367,9 @@ public class FileController {
      */
     @RequestMapping("downloadFile.do")
     public String downloadFile(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request,
-                               @RequestParam(value="name") String name,
-                               @RequestParam(value="originalName") String originalName,
-                               @RequestParam(value="path") String path) {
+                               @RequestParam(value = "name") String name,
+                               @RequestParam(value = "originalName") String originalName,
+                               @RequestParam(value = "path") String path) {
         JSONObject result = new JSONObject();
         UserEntity user = new UserEntity();
         user.setUserName(name);
@@ -372,20 +379,20 @@ public class FileController {
         try {
             String local = request.getSession().getServletContext().getRealPath("/downloadFile/");
             String myFile = local + originalName;
-            if(!new java.io.File(myFile).exists()){
+            if (!new java.io.File(myFile).exists()) {
                 java.io.File realPath = new java.io.File(local);
-                if(!realPath.exists()) {
+                if (!realPath.exists()) {
                     realPath.mkdirs();
                 }
-                if(fileService.downloadFile(user, file, myFile)) {
+                if (fileService.downloadFile(user, file, myFile)) {
                     result.put("errres", true);
                     result.put("errmsg", "下载成功！");
                     result.put("url", "downloadFile\\" + originalName);
-                }else {
+                } else {
                     result.put("errres", false);
                     result.put("errmsg", "文件不存在！");
                 }
-            }else {
+            } else {
                 result.put("errres", true);
                 result.put("errmsg", "文件已经存在！");
                 result.put("url", "downloadFile\\" + originalName);
@@ -400,6 +407,7 @@ public class FileController {
     /**
      * 选择弹窗下载文件
      * 未使用
+     *
      * @param response
      * @param httpSession
      * @param request
@@ -409,9 +417,9 @@ public class FileController {
      * @return
      */
     public String downloadFileSelect(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request,
-                                     @RequestParam(value="name") String name,
-                                     @RequestParam(value="originalName") String originalName,
-                                     @RequestParam(value="path") String path) {
+                                     @RequestParam(value = "name") String name,
+                                     @RequestParam(value = "originalName") String originalName,
+                                     @RequestParam(value = "path") String path) {
         JSONObject result = new JSONObject();
         UserEntity user = new UserEntity();
         user.setUserName(name);
@@ -425,10 +433,10 @@ public class FileController {
             int returnVal = jFileChooser.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 myfile = jFileChooser.getSelectedFile();
-                if((myfile!=null)&&(fileService.downloadFile(user, file, myfile.getAbsolutePath() + "\\" +file.getOriginalName()))) {
+                if ((myfile != null) && (fileService.downloadFile(user, file, myfile.getAbsolutePath() + "\\" + file.getOriginalName()))) {
                     result.put("errres", true);
                     result.put("errmsg", "下载成功！");
-                }else {
+                } else {
                     result.put("errres", false);
                     result.put("errmsg", "文件不存在！");
                 }
@@ -444,6 +452,7 @@ public class FileController {
 
     /**
      * 在线查看文件,普通文件-->pdf文件-->swf文件
+     *
      * @param httpSession
      * @param request
      * @param name
@@ -453,26 +462,26 @@ public class FileController {
      */
     @RequestMapping("/viewFile.do")
     public ModelAndView viewFile(HttpSession httpSession, HttpServletRequest request,
-                                 @RequestParam(value="name") String name,
-                                 @RequestParam(value="originalName") String originalName,
-                                 @RequestParam(value="path") String path) throws Exception{
+                                 @RequestParam(value = "name") String name,
+                                 @RequestParam(value = "originalName") String originalName,
+                                 @RequestParam(value = "path") String path) throws Exception {
         String local = request.getSession().getServletContext().getRealPath("/downloadFile/");
         java.io.File realPath = new java.io.File(local);
-        if(!realPath.exists()) {
+        if (!realPath.exists()) {
             realPath.mkdirs();
         }
         String generalFile = local + originalName;
         String swfFile = FilesUtil.getFilePrefix(generalFile) + ".swf";
         java.io.File outSwfFile = new java.io.File(swfFile);
-        if(!outSwfFile.exists()){
+        if (!outSwfFile.exists()) {
             String pdfFile = FilesUtil.getFilePrefix(generalFile) + ".pdf";
             java.io.File outPdfFile = new java.io.File(pdfFile);
-            if(!outPdfFile.exists()){
+            if (!outPdfFile.exists()) {
                 java.io.File outGeneralFile = new java.io.File(generalFile);
-                if(!outGeneralFile.exists()) {
+                if (!outGeneralFile.exists()) {
                     UserEntity user = new UserEntity();
                     user.setUserName(name);
-                    FileEntity  file = new FileEntity();
+                    FileEntity file = new FileEntity();
                     file.setOriginalName(originalName);
                     file.setPath(path);
                     fileService.downloadFile(user, file, generalFile);

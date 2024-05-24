@@ -1,4 +1,4 @@
-package com.example.hadoop.basedao;
+package com.example.hadoop.dao.basedao;
 
 import com.example.hadoop.conn.HbaseConn;
 import org.apache.hadoop.hbase.HColumnDescriptor;

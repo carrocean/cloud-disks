@@ -27,12 +27,6 @@
             <artifactId>swagger-annotations</artifactId>
             <version>1.6.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>cloud-disks-domain</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
     <!-- https://mvnrepository.com/artifact/net.sf.json-lib/json-lib -->
 
