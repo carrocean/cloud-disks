@@ -117,9 +117,9 @@ public class FileDao {
 
     /**
      * 向user_file表中添加信息，行健为：用户id_目录id_文件id，列值为文件id
-     * @param file
      * @param user
-     * @param rowKey
+     * @param parentid
+     * @param rowkey
      */
     public void addUserFile(UserEntity user, long parentid, long rowkey) {
         hbaseDao.updateOneData(Constants.TABLE_USERFILE, user.getUserId() + "_" + parentid + "_" + rowkey, Constants.FAMILY_USERFILE_FILE, Constants.COLUMN_USERFILE_FILEID, rowkey);
@@ -172,9 +172,8 @@ public class FileDao {
 
     /**
      * 重命名文件或文件夹，文件与文件夹修改file表
-     * @param id
+     * @param file
      * @param newname
-     * @param name
      */
     public void renameFileOrFolderInfo(FileEntity file, String newname) {
         if(file.getType().equals("F")){
@@ -186,7 +185,7 @@ public class FileDao {
     /**
      * 下载文件，从hdfs中
      * @param user
-     * @param path
+     * @param file
      * @param local
      */
     public boolean downloadFile(UserEntity user, FileEntity file, String local) {
@@ -195,8 +194,9 @@ public class FileDao {
 
     /**
      * 复制或者移动文件或者目录
-     * @param sourcePath
-     * @param destPath
+     * @param user
+     * @param sourceFile
+     * @param destFile
      * @param flag
      */
     public void copyOrMoveFile(UserEntity user, FileEntity sourceFile, FileEntity destFile, boolean flag) {

@@ -77,7 +77,7 @@ const router = useRouter();
 const route = useRoute();
 
 const userInfo = ref({
-    nickName: userInfo.nickName,
+    nickName: "张三",
 });
 
 const menus = [
