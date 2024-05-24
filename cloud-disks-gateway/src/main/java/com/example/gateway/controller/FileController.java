@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -27,7 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
+@RequestMapping("/api/cloud/disks/file")
 public class FileController {
     @Resource
     private FileService fileService;
@@ -38,7 +40,7 @@ public class FileController {
      * @param httpSession
      * @return
      */
-    @RequestMapping("/fileList.do")
+    @RequestMapping("/fileList")
     public ModelAndView fileList(HttpSession httpSession,
                                  @RequestParam(value = "dir", defaultValue = "/") String dir,
                                  @RequestParam(value = "originalDir", defaultValue = "/") String originalDir,
@@ -63,7 +65,7 @@ public class FileController {
      * @param parentid
      * @return
      */
-    @RequestMapping("/showUpload.do")
+    @RequestMapping("/showUpload")
     public ModelAndView showUpload(@RequestParam(value = "dir") String dir,
                                    @RequestParam(value = "originalDir") String originalDir,
                                    @RequestParam(value = "parentid") long parentid) {
@@ -83,7 +85,7 @@ public class FileController {
      * @return
      * @throws IOException
      */
-    @RequestMapping("/uploadFile.do")
+    @RequestMapping("/uploadFile")
     public ModelAndView uploadFile(HttpServletRequest request, HttpSession httpSession,
                                    @RequestParam(value = "dir") String dir,
                                    @RequestParam(value = "originalDir") String originalDir,
@@ -138,7 +140,7 @@ public class FileController {
      * @param parentid
      * @return
      */
-    @RequestMapping("/makeFolder.do")
+    @RequestMapping("/makeFolder")
     public ModelAndView makeFolder(HttpServletResponse response, HttpSession httpSession,
                                    @RequestParam(value = "dirName") String dirName,
                                    @RequestParam(value = "originalDir") String originalDir,
@@ -196,7 +198,7 @@ public class FileController {
      * @param parentid
      * @return
      */
-    @RequestMapping("/deleteFileOrFolder.do")
+    @RequestMapping("/deleteFileOrFolder")
     public ModelAndView deleteFileOrFolder(HttpSession httpSession, HttpServletResponse response,
                                            @RequestParam(value = "ids") String ids,
                                            @RequestParam(value = "parentid") long parentid) {
@@ -230,7 +232,7 @@ public class FileController {
      * @param type
      * @return
      */
-    @RequestMapping("/renameFileOrFolder.do")
+    @RequestMapping("/renameFileOrFolder")
     public ModelAndView renameFileOrFolder(HttpSession httpSession, HttpServletResponse response,
                                            @RequestParam(value = "id") long id, @RequestParam(value = "name") String name,
                                            @RequestParam(value = "newname") String newname, @RequestParam(value = "type") String type,
@@ -275,7 +277,7 @@ public class FileController {
      * @param parentid
      * @return
      */
-    @RequestMapping("/showTree.do")
+    @RequestMapping("/showTree")
     public ModelAndView showTree(@RequestParam(value = "ids") String ids,
                                  @RequestParam(value = "flag") String flag,
                                  @RequestParam(value = "parentid") long parentid) {
@@ -293,7 +295,7 @@ public class FileController {
      * @param id
      * @return
      */
-    @RequestMapping("/tree.do")
+    @RequestMapping("/tree")
     @ResponseBody
     public List<NodeEntity> tree(HttpSession httpSession,
                                  @RequestParam(value = "id", defaultValue = "0") long id) {
@@ -323,7 +325,7 @@ public class FileController {
      * @param flag
      * @return
      */
-    @RequestMapping("/copyOrMoveFile.do")
+    @RequestMapping("/copyOrMoveFile")
     public ModelAndView copyOrMoveFile(HttpServletResponse response, HttpSession httpSession,
                                        @RequestParam(value = "ids") String ids, @RequestParam(value = "parentid") long parentid,
                                        @RequestParam(value = "destid") long destid, @RequestParam(value = "flag") boolean flag) {
@@ -365,7 +367,7 @@ public class FileController {
      * @param path
      * @return
      */
-    @RequestMapping("downloadFile.do")
+    @RequestMapping("downloadFile")
     public String downloadFile(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request,
                                @RequestParam(value = "name") String name,
                                @RequestParam(value = "originalName") String originalName,
@@ -460,7 +462,7 @@ public class FileController {
      * @param path
      * @return
      */
-    @RequestMapping("/viewFile.do")
+    @RequestMapping("/viewFile")
     public ModelAndView viewFile(HttpSession httpSession, HttpServletRequest request,
                                  @RequestParam(value = "name") String name,
                                  @RequestParam(value = "originalName") String originalName,
