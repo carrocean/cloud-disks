@@ -133,7 +133,7 @@
 
     const setCurrentRow = (rowKey, rowValue) => {
         let row = props.dataSource.list.find((item) => {
-            return item[rowkey] === rowValue;
+            return item[rowKey] === rowValue;
     });
     dataTable.value.setCurrentRow(row);
     };
