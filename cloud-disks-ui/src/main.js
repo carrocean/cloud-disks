@@ -20,7 +20,7 @@ import Utils from './utils/Utils'
 //自定义组件
 import Table from '@/components/Table.vue'
 import Icon from '@/components/Icon.vue'
-
+import NoData from '@/components/NoData.vue'
 
 const app = createApp(App)
 
@@ -29,6 +29,8 @@ app.use(ElementPlus)
 app.use(router)
 app.component("Table", Table);
 app.component("Icon", Icon);
+app.component("NoData", NoData);
+
 
 //配置全局组件
 app.config.globalProperties.Verify=Verify;

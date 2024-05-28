@@ -12,9 +12,7 @@
                         <span class="download"><img src="../assets/下载.svg" alt=""></span>
                     </template>
                     <template #default>
-                        <Uploader ref="uploaderRef">
-
-                        </Uploader>
+                        <Uploader ref="uploaderRef" @uploadCallback="uploadCallbackHandler"></Uploader>
                     </template>
                 </el-popover>
 
@@ -88,9 +86,18 @@ const addFile=(data)=> {
     uploaderRef.value.addFile(file,filePid);
 };
 
+//上传文件回调
+const uploadCallbackHandler = () => {
+    nextTick(() => {
+        // 更新用户空间
+    });
+};
+
 const userInfo = ref({
     nickName: "张三",
-});
+}
+//proxy.Vuecookies.get("userInfo")
+);
 
 const menus = [
     {
