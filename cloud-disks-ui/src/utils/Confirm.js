@@ -1,4 +1,5 @@
 import { ElMessage } from "element-plus";
+import { ElMessageBox } from "element-plus";
 import message from "./Message";
 
 const confirm = (message,okfun)=>{

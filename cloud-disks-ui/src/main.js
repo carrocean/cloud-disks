@@ -2,6 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import axios from 'axios';
 import router from './router'
 //引入Element-plus
 import ElementPlus from 'element-plus'
@@ -17,10 +18,12 @@ import Verify from './utils/Verify'
 import Message from './utils/Message'
 import Confirm from './utils/Confirm'
 import Utils from './utils/Utils'
+// import Request from './utils/Request'
 //自定义组件
 import Table from '@/components/Table.vue'
 import Icon from '@/components/Icon.vue'
-
+import NoData from '@/components/NoData.vue'
+import FolderSelect from '@/components/FolderSelect.vue'
 
 const app = createApp(App)
 
@@ -29,6 +32,9 @@ app.use(ElementPlus)
 app.use(router)
 app.component("Table", Table);
 app.component("Icon", Icon);
+app.component("NoData", NoData);
+app.component("FolderSelect", FolderSelect);
+
 
 //配置全局组件
 app.config.globalProperties.Verify=Verify;

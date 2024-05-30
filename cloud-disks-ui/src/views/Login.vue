@@ -112,7 +112,7 @@ const doSubmit = async () => {
         if (res.code === 200) {
           ElMessage.success("登录成功");
           window.sessionStorage.setItem('token', res.data.token);
-          router.push('/Framework');
+          router.push('/main/all');
         } else {
           ElMessage.error("账号或密码错误");
         }

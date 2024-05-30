@@ -20,11 +20,11 @@
           <span class="iconfont icon-folder-add"></span>
           新建文件夹
         </el-button>
-        <el-button >
+        <el-button  :disabled="selectFileIdList.length == 0" @click="delFileBatch">
           <span class="iconfont icon-del"></span>
           批量删除
         </el-button>
-        <el-button >
+        <el-button  :disabled="selectFileIdList.length == 0" @click="moveFolderBatch">
           <span class="iconfont icon-move"></span>
           批量移动
         </el-button>
@@ -79,9 +79,9 @@
               <template v-if="row.showOp  && row.status==2">
                 <span class="iconfont icon-share1">分享</span>
                 <span class="iconfont icon-download" v-if="row.folderType==0">下载</span>
-                <span class="iconfont icon-del">删除</span>
+                <span class="iconfont icon-del" @click="delFile(row)">删除</span>
                 <span class="iconfont icon-edit" @click="editFileName(index)">重命名</span>
-                <span class="iconfont icon-move">移动</span>
+                <span class="iconfont icon-move" @click="moveFolder">移动</span>
               </template>
             </span>
           </div>
@@ -91,6 +91,8 @@
         </template> 
     </Table>
     </div>
+
+    <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
   </div>
 </template>
 
@@ -113,6 +115,8 @@ const api = {
   createDownloadUrl: "/file/createDownloadUrl",
   download:"/api/file/download",
 };
+
+
 
 const columns = [
   {
@@ -144,7 +148,7 @@ const tableData = ref({
       fileType: 0, 
       folderType: 0, 
       lastUpdateTime: '2024-05-01', 
-      status: 1, 
+      status: 2, 
       fileId:1,
       
     },
@@ -258,7 +262,8 @@ const loadDataList = async () => {
   }
   tableData.value = result.data;
 };
-const rowSelected = () => {};
+
+
 
 const showOp=(row)=> {
   tableData.value.list.forEach((element)=>{
@@ -355,6 +360,98 @@ const editFileName=(index)=> {
     editNameRef.value.focus();
   });
 }
+
+//多选
+const selectFileIdList = ref([]);
+const rowSelected = (rows) => {
+  selectFileIdList.value = [];
+  rows.forEach((item) => {
+    selectFileIdList.value.push(item.fileId);
+  });
+};
+
+//删除文件
+const delFile = async (row) => {
+  proxy.Confirm(
+    `你确定要删除【${row.fileName}】吗`,
+    async () => {
+      let result = await proxy.Request({
+        url: api.delFile,
+        params:{
+          fileIds: row.fileId,
+        },
+      });
+      if (!result) {
+        return;
+      }
+      loadDataList();
+    }
+  );
+};
+
+const delFileBatch = () => {
+  if(selectFileIdList.value.length == 0){
+    return;
+  }
+  proxy.Confirm(
+    `你确定要删除这些文件吗?删除的文件可在3天内通过回收站还原`,
+    async () => {
+      let result = await proxy.Request({
+        url: api.delFile,
+        params:{
+          fileIds: selectFileIdList.value.join(","),
+        },
+      });
+      if (!result) {
+        return;
+      }
+      loadDataList();
+    }
+  );
+};
+
+const folderSelectRef = ref();
+const currentMoveFile = ref({});
+
+const moveFolder = (data) => {
+  currentMoveFile.value = data;
+  folderSelectRef.value.showFolderDialog(currentFolder.value.fileId);
+};
+
+const moveFolderBatch = () => {
+  currentMoveFile.value = {};
+  folderSelectRef.value.showFolderDialog(currentFolder.value.fileId);
+};
+
+const moveFolderDone = async (folderId) => {
+  if(currentFolder.value.fileId==folderId){
+    proxy.Message.warning("文件正在当前目录");
+    return;
+  }
+  let fileIdArray = [];
+  if(currentMoveFile.value.fileId){
+    fileIdsArray.push(currentMoveFile.value.fileId);
+  }else{
+    fileIdsArray = fileIdsArray.concat(selectFileIdList.value);
+  }
+  let result = await proxy.Request({
+    url: api.changeFileFolder,
+    params:{
+      fileIds: fileIdsArray.join(","),
+      filePid: folderId,
+    }, 
+  });
+  if (!result) {
+    return;
+  }
+  folderSelectRef.value.close();
+  loadDataList();
+};
+
+// 文件下载
+const downloadFile = (row) => {
+};
+
 </script>
 
 <style lang="scss" scoped>
