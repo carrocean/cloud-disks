@@ -1,4 +1,4 @@
-package com.example.hadoop.basedao;
+package com.example.hadoop.dao.basedao;
 
 import com.example.entity.FileEntity;
 import com.example.entity.UserEntity;
@@ -27,7 +27,7 @@ public class HdfsDao {
      * @return
      */
     private String formatPathMethod(UserEntity userEntity, FileEntity fileEntity) {
-        return basePath + userEntity.getName() + "/" + fileEntity.getPath();
+        return basePath + userEntity.getUserName() + "/" + fileEntity.getPath();
     }
 
     /**

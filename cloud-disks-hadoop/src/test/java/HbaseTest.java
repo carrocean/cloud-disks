@@ -1,7 +1,5 @@
-import com.example.entity.FileEntity;
-import com.example.entity.UserEntity;
-import com.example.hadoop.basedao.HbaseDao;
-import com.example.hadoop.basedao.HdfsDao;
+
+import com.example.hadoop.dao.basedao.HbaseDao;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
