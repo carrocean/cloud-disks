@@ -8,7 +8,9 @@
         :showCancel="false"
         @close="dialogConfig.show = false"
         >
-        <div class="navigation-panel"></div>
+        <div class="navigation-panel">
+            <Navigation ref="navigationRef" @navChange="navChange" :watchPath="false"></Navigation>
+        </div>
         <div class="folder-list" v-if="folderList.length>0">
             <div
                 class="folder-item"
@@ -19,7 +21,7 @@
                 <span class="file-name"> {{item.fileName}}</span>
             </div>
         </div>
-        <div v-else>
+        <div v-else class="tips">
             移动<span>{{ currentFolder.fileName }}</span>
         </div>
         </Dialog>
@@ -84,14 +86,20 @@ defineExpose({
 });
 
 //选择目录
+const navigationRef=ref();
 const selectFolder = (data) => {
-
+    navigationRef.value.openFolder(data);
 };
 
 //确定选择目录
 const emit = defineEmits(["folderSelect"]);
 const folderSelect = () => {
     emit("folderSelect",filePid.value);
+};
+const navChange=(data)=>{
+    const {curFolder} = data;
+    currentFolder.value=curFolder.fileId;
+    loadAllFolder();
 };
 
 </script>

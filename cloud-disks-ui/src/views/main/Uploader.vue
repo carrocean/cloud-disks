@@ -313,7 +313,7 @@ const uploadFile = async (uid, chunkIndex) => {
     currentFile.fielId = updateResult.data.fielId;
     currentFile.status = STATUS[updateResult.data.status].value;
     currentFile.chunkIndex = i;
-    if (updateResult.data.status == STATUS.upload_seconds.value || updateResult.data.start == STATUS.upload_finish.value){
+    if (updateResult.data.status == STATUS.upload_seconds.value || updateResult.data.status == STATUS.upload_finish.value){
       currentFile.uploadProgress = 100;
       emit("uploadCallback");
       break;

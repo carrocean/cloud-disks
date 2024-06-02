@@ -24,6 +24,7 @@ import Table from '@/components/Table.vue'
 import Icon from '@/components/Icon.vue'
 import NoData from '@/components/NoData.vue'
 import FolderSelect from '@/components/FolderSelect.vue'
+import Navigation from '@/components/Navigation.vue'
 
 const app = createApp(App)
 
@@ -34,6 +35,7 @@ app.component("Table", Table);
 app.component("Icon", Icon);
 app.component("NoData", NoData);
 app.component("FolderSelect", FolderSelect);
+app.component("Navigation", Navigation);
 
 
 //配置全局组件

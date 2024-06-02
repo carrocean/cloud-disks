@@ -31,15 +31,15 @@
         <!-- <div class="iconfont icon-refresh"></div>     -->
       </div>
       <!--导航-->
-      <div style="padding-left: 20px; ">全部文件</div>
+      <Navigation ref="navigationRef" @navChange="navChange"></Navigation>
     </div>
-    <div class="file-list">
+    <div class="file-list" v-if="tableData.list && tableData.list.length>0">
       <Table 
         ref="dataTableRef" 
         :columns="columns"
         :dataSource="tableData"
         :fetch="loadDataList"
-        :initFetch="true"
+        :initFetch="false"
         :options="tableOptions"
         @rowSelected="rowSelected"
       >
@@ -58,7 +58,7 @@
                   <Icon v-if="row.folderType == 1" :fileType="0"></Icon>
                 </template>
             <span class="file-name" v-if="!row.showEdit" :title="row.fileName">
-            <span>{{ row.fileName}}</span>
+            <span @click="preview(row)">{{ row.fileName}}</span>
             <span v-if="row.status==0" class="transfer-status">转码中</span>
             <span v-if="row.status==1" class="transfer-status transfer-fail">转码失败</span>
             </span>
@@ -92,18 +92,53 @@
     </Table>
     </div>
 
+    <div class="no-data" v-else>
+      <div class="no-data-inner">
+        <!-- <Icon iconName="icon-folder-add" :width="120" fit="file"></Icon> -->
+        <span><img src="@\assets\icon-image\no_data.png" class="no_datapng"></span>
+        <div class="tips">当前目录为空，请先上传文件</div>
+        <div class="op-list">
+          <el-upload
+          :show-file-list="false"
+          :with-credentials="true"
+          :multiple="true"
+          :http-request="addFile"
+          :accept="fileAccept"
+          >
+          <div class="op-item">
+            <img src="@\assets\icon-image\file.png" style="height: 60px;width: 60px;background-color: rgb(254, 254, 254);">
+            <div>上传文件</div>
+          </div>
+          </el-upload>
+          <div class="op-item" @click="newFolder" v-if="categroy!='all'">
+              <img src="@\assets\icon-image\folder.png" style="height: 60px;width: 60px;background-color: rgb(255, 255, 255);">
+            <div>新建目录</div>y
+          </div>
+        </div>
+      </div>
+
+    </div>
     <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, getCurrentInstance, nextTick ,onMounted} from "vue";
+import CategoryInfo from "@/js/CategoryInfo"
 const { proxy } = getCurrentInstance();
+
 const emit = defineEmits(["addFile"]);
 const addFile=(fileData)=> {
   emit("addFile",{file:fileData.file, filePid:currentFolder.value.fileId});
 };
-const currentFolder=ref({fileId:0})
+const reload = ()=> {
+  showLoading.value=false;
+  loadDataList();
+};
+defineExpose({
+  reload,
+});
+const currentFolder=ref({fileId:"0"})
 
 const api = {
   loadDataList:"/file/loadDataList",
@@ -116,7 +151,10 @@ const api = {
   download:"/api/file/download",
 };
 
-
+const fileAccept = computed(()=> {
+  const categoryItem=CategoryInfo[categroy.value];
+  return categoryItem?categoryItem.accept:"*";
+})
 
 const columns = [
   {
@@ -138,102 +176,67 @@ const columns = [
 ];
 
 const tableData = ref({
-  pageNo: 1,
-  pageSize: 10,
-  list: [
-    // 这里初始化 tableData.list 为一个具有初始内容的数组
-    { 
-      fileName: '文件1.vue', 
-      fileSize: 1024, 
-      fileType: 0, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-01', 
-      status: 2, 
-      fileId:1,
+  // pageNo: 1,
+  // pageSize: 10,
+  // list: [
+  //   // 这里初始化 tableData.list 为一个具有初始内容的数组
+  //   { 
+  //     fileName: '文件1.vue', 
+  //     fileSize: 1024, 
+  //     fileType: 0, 
+  //     folderType: 0, 
+  //     lastUpdateTime: '2024-05-01', 
+  //     status: 2, 
+  //     fileId:1,
       
-    },
-    { 
-      fileName: '文件2.pdf', 
-      fileSize: 2048, 
-      fileType: 1, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 0, 
-      fileId:2,
-    },{ 
-      fileName: '文件3.pdf', 
-      fileSize: 2048, 
-      fileType: 2, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 1, 
-      fileId:3,
-    },
-    { 
-      fileName: '文件4.pdf', 
-      fileSize: 2048, 
-      fileType: 3, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 1, 
-      fileId:4,
-    },
-    { 
-      fileName: '文件5.pdf', 
-      fileSize: 2048, 
-      fileType: 4, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 1, 
-      fileId:5,
-    },
-    { 
-      fileName: '文件6.pdf', 
-      fileSize: 2048, 
-      fileType: 5, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 2, 
-      fileId:6,
-    },
-    { 
-      fileName: '文件7.pdf', 
-      fileSize: 2048, 
-      fileType: 6, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 2, 
-      fileId:7,
-    },
-    { 
-      fileName: '文件8.pdf', 
-      fileSize: 2048, 
-      fileType: 7, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 2, 
-      fileId:8,
-    },
-    { 
-      fileName: '文件9.pdf', 
-      fileSize: 102555555, 
-      fileType: 8, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 2, 
-      fileId:9,
-    },
-    { 
-      fileName: '文件10.pdf', 
-      fileSize: 2048, 
-      fileType: 9, 
-      folderType: 0, 
-      lastUpdateTime: '2024-05-02', 
-      status: 2, 
-      fileId:10,
-    },
-    // 可以继续添加更多初始行数据...
-  ]
+  //   },
+  //   { 
+  //     fileName: '文件6.pdf', 
+  //     fileSize: 2048, 
+  //     fileType: 5, 
+  //     folderType: 0, 
+  //     lastUpdateTime: '2024-05-02', 
+  //     status: 2, 
+  //     fileId:6,
+  //   },
+  //   { 
+  //     fileName: '文件7.pdf', 
+  //     fileSize: 2048, 
+  //     fileType: 6, 
+  //     folderType: 0, 
+  //     lastUpdateTime: '2024-05-02', 
+  //     status: 2, 
+  //     fileId:7,
+  //   },
+  //   { 
+  //     fileName: '文件8.pdf', 
+  //     fileSize: 2048, 
+  //     fileType: 7, 
+  //     folderType: 0, 
+  //     lastUpdateTime: '2024-05-02', 
+  //     status: 2, 
+  //     fileId:8,
+  //   },
+  //   { 
+  //     fileName: '文件9.pdf', 
+  //     fileSize: 102555555, 
+  //     fileType: 8, 
+  //     folderType: 0, 
+  //     lastUpdateTime: '2024-05-02', 
+  //     status: 2, 
+  //     fileId:9,
+  //   },
+  //   { 
+  //     fileName: '文件10.pdf', 
+  //     fileSize: 2048, 
+  //     fileType: 9, 
+  //     folderType: 0, 
+  //     lastUpdateTime: '2024-05-02', 
+  //     status: 2, 
+  //     fileId:10,
+  //   },
+  //   // 可以继续添加更多初始行数据...
+  // ]
 });
 const tableOptions = ref({
   extHeight: 50,
@@ -243,18 +246,22 @@ const tableOptions = ref({
 const fileNameFuzzy = ref();
 const categroy = ref();
 
+const showLoading = ref(true);
+
 const loadDataList = async () => {
   let params = {
     pageNo: tableData.value.pageNo,
     pageSize:tableData.value.pageSize,
     fileNameFuzzy:fileNameFuzzy.value,
-    filePid:0,
+    filePid:currentFolder.value.fileId,
+    categroy:categroy.value,
   };
   if(params.categroy!=="all"){
     delete params.filePid;
   }
   const result =await proxy.Request({
     url:api.loadDataList,
+    showLoading:showLoading.value,
     params:params
   })
   if(!result){
@@ -452,8 +459,28 @@ const moveFolderDone = async (folderId) => {
 const downloadFile = (row) => {
 };
 
+//预览
+const navigationRef=ref();
+const preview = (data) => {
+  //目录
+  if(data.folderType==1) {
+    navigationRef.value.openFolder(data);
+  }
+}
+
+const navChange =(data)=> {
+  const { categroyId,curFolder }=data;
+  currentFolder.value=curFolder;
+  categroy.value=categroyId;
+  loadDataList();
+}
+
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/file.list.scss";
+.no_datapng {
+  width: 120px;
+  height: 120px;
+}
 </style>

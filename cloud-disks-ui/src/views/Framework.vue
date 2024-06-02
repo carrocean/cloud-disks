@@ -60,7 +60,7 @@
             </div>
             <div class="body-content">
                 <router-view v-slot="{Component}">
-                    <component :is="Component" @addFile="addFile">
+                    <component ref="routerViewRef" :is="Component" @addFile="addFile">
 
                     </component>
                 </router-view>
@@ -87,9 +87,11 @@ const addFile=(data)=> {
 };
 
 //上传文件回调
+const routerViewRef = ref();
 const uploadCallbackHandler = () => {
     nextTick(() => {
         // 更新用户空间
+        routerViewRef.value.reload();
     });
 };
 
