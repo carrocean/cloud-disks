@@ -5,10 +5,10 @@ import { request } from '@/utils/Request.js';
 var prefix = '/api/cloud/disks/user/';
 var managerUrl = {
     login: prefix + 'login',
-    register: prefix + 'register'
+    register: prefix + 'register',
+    checkUserLoginInfo: prefix + 'checkUserLoginInfo'
 }
 
-//导出login方法，供其它地方使用
 export function login(data) {
     return request({
         url: managerUrl.login,
@@ -22,5 +22,12 @@ export function register(data) {
         url: managerUrl.register,
         method: 'post',
         data:data,
+    })
+}
+
+export function checkUserLoginInfo() {
+    return request({
+        url: managerUrl.checkUserLoginInfo,
+        method: 'get',
     })
 }

@@ -30,6 +30,7 @@
     "vue-pdf-embed": "^2.0.3",
     "vue-router": "^4.3.2",
     "vue3-pdfjs": "^0.1.6",
+    "vuex": "^4.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

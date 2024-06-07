@@ -1,7 +1,10 @@
 package com.example.util;
+
 import io.jsonwebtoken.*;
 import lombok.val;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.UUID;
 
@@ -9,12 +12,12 @@ public class JwtUtil {
     private static long time = 1000 * 60 * 60 * 24;
     private static String signature = "admin";
 
-    public static String createToken() {
+    public static String createToken(Integer userId, String userName) {
         JwtBuilder jwtBuilder = Jwts.builder();
         String jwtToken = jwtBuilder.setHeaderParam("typ", "JWT")
                 .setHeaderParam("alg", "HS256")
-                .claim("username", "admin")
-                .claim("role", "admin")
+                .claim("userName", userName)
+                .claim("userId", userId)
                 .setSubject("admin-test")
                 .setExpiration(new Date(System.currentTimeMillis() + time))
                 .setId(UUID.randomUUID().toString())
@@ -22,7 +25,8 @@ public class JwtUtil {
                 .compact();
         return jwtToken;
     }
-//校验token
+
+    //校验token
     public static boolean checkToken(String token) {
         if (token == null) return false;
         try {
@@ -30,7 +34,19 @@ public class JwtUtil {
         } catch (Exception e) {
             return false;
         }
-return true;
+        return true;
+    }
+
+    /**
+     * 根据token获取会员id
+     * @param jwtToken
+     * @return
+     */
+    public static String getUserIdByToken(String jwtToken) {
+        if(StringUtils.isEmpty(jwtToken)) return "";
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(signature).parseClaimsJws(jwtToken);
+        Claims claims = claimsJws.getBody();
+        return String.valueOf(claims.get("userId"));
     }
 }
 

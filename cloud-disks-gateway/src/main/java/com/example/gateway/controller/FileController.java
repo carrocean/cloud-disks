@@ -4,10 +4,9 @@ import com.example.entity.FileEntity;
 import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
 import com.example.enums.Constants;
-import com.example.service.FileService;
+import com.example.service.IFileService;
 import com.example.util.*;
 import net.sf.json.JSONObject;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,7 +32,7 @@ import java.util.Map;
 @RequestMapping("/api/cloud/disks/file")
 public class FileController {
     @Resource
-    private FileService fileService;
+    private IFileService fileService;
 
     /**
      * 列出文件列表

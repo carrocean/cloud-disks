@@ -17,7 +17,7 @@ public class HdfsConn {
     private HdfsConn() {
         try {
             configuration = new Configuration();
-            configuration.set("fs.defaultFS", "hdfs://47.113.149.53:9000/");
+            configuration.set("fs.defaultFS", "hdfs://{hadoop服务器ip}:9000/");
             System.setProperty("HADOOP_USER_NAME", "root");
             configuration.set("dfs.permissions", "false");
             fileSystem = FileSystem.get(configuration);

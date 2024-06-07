@@ -72,7 +72,7 @@ function doSubmit() {
     if (res.code === 200) {
       proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
       ElMessage.success("登录成功");
-      router.push('/main/all');
+      router.push('/home');
     } else {
       ElMessage.error("账号或密码错误");
     }

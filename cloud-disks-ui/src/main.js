@@ -26,11 +26,13 @@ import FolderSelect from '@/components/FolderSelect.vue'
 import common from '@/libs/globalFunction/common.js'
 // 引入自定义的全局配置
 import config from '@/config/index.js'
+import store from '@/store/index.js'
 
 const app = createApp(App)
 
 app.use(ElementPlus)
 app.use(router)
+app.use(store)
 app.component("Table", Table);
 app.component("Icon", Icon);
 app.component("NoData", NoData);

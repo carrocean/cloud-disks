@@ -2,10 +2,12 @@ package com.example.gateway.controller;
 
 import com.example.entity.UserEntity;
 import com.example.enums.Constants;
-import com.example.service.impl.UserServiceImpl;
-import com.example.mapper.UserMapper;
+import com.example.service.IUserService;
+import com.example.util.AjaxResult;
+import com.example.util.JwtUtil;
 import com.example.util.Result;
 import com.example.util.ResultGenerator;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,21 +16,16 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/cloud/disks/user")
 public class UserController {
-    static Map<Integer, UserEntity> userMap = new HashMap<>();
     @Autowired
-    UserServiceImpl userServiceImpl;
-    UserMapper userMapper;
+    IUserService userService;
 
     @PostMapping("/login")
     public Result login(HttpServletRequest request,@RequestBody UserEntity newUser) {
         Result result;
-        UserEntity dbUser = userServiceImpl.loginService(newUser);
+        UserEntity dbUser = userService.loginService(newUser);
         if (dbUser != null) {
             result = ResultGenerator.getSuccessResult(dbUser);
             HttpSession session = request.getSession();
@@ -41,7 +38,7 @@ public class UserController {
     @PostMapping("/register")
     public Result register(@RequestBody UserEntity newUser) {
         Result result;
-        String msg = userServiceImpl.registerService(newUser);
+        String msg = userService.registerService(newUser);
         if (msg.equals("注册成功")) result = ResultGenerator.getSuccessResult();
         else result = ResultGenerator.getFailResult("注册失败");
         return result;
@@ -50,9 +47,24 @@ public class UserController {
     @GetMapping("/checkToken")
     public Result checkToken(HttpServletRequest request) {
         Result result;
-        if (userServiceImpl.checkTokenService(request)) result = ResultGenerator.getSuccessResult();
+        if (userService.checkTokenService(request)) result = ResultGenerator.getSuccessResult();
         else result = ResultGenerator.getFailResult("未认证");
         return result;
+    }
+
+    @GetMapping("/checkUserLoginInfo")
+    @ResponseBody
+    public AjaxResult checkUserLoginInfo(@RequestHeader("token") String token) {
+        String userId = JwtUtil.getUserIdByToken(token);
+
+        if (StringUtils.isNotEmpty(userId)) {
+            UserEntity user = userService.getById(userId);
+            return AjaxResult.success(user);
+
+        } else {
+            return AjaxResult.error("用户暂未登录");
+        }
+
     }
 }
 

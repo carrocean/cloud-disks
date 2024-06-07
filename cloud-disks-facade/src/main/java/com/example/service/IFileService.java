@@ -7,7 +7,7 @@ import com.example.entity.UserEntity;
 import java.io.InputStream;
 import java.util.List;
 
-public interface FileService {
+public interface IFileService {
     /**
      * 获得文件列表，查看文件或目录列表
      * @param user

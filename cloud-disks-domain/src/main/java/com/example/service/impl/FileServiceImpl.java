@@ -5,7 +5,7 @@ import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
 import com.example.enums.Constants;
 import com.example.hadoop.dao.FileDao;
-import com.example.service.FileService;
+import com.example.service.IFileService;
 import com.example.util.DateUtil;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Service("fileService")
-public class FileServiceImpl implements FileService {
+public class FileServiceImpl implements IFileService {
     @Autowired
     private FileDao fileDao;
 
