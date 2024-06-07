@@ -161,6 +161,14 @@ const menus = [
             },
         ],
     },
+  {
+    path: "/upload",
+    icon: "del",
+    name: "上传",
+    menuCode: "upload",
+    tips: "",
+    allShow: true
+  },
    
 ];
 

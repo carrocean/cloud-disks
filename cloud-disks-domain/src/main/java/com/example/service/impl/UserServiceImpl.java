@@ -2,16 +2,17 @@ package com.example.service.impl;
 
 import com.example.entity.UserEntity;
 import com.example.mapper.UserMapper;
-import com.example.service.UserService;
 import com.example.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import com.example.service.UserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 @Service
 public class UserServiceImpl implements UserService {
-    @Resource
+    @Autowired
     UserMapper userMapper;
     @Override
     public UserEntity loginService( UserEntity newUser){

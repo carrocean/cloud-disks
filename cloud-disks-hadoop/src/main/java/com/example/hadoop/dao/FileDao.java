@@ -2,14 +2,9 @@ package com.example.hadoop.dao;
 
 import com.example.entity.FileEntity;
 import com.example.entity.UserEntity;
-import com.example.hadoop.conn.HbaseConn;
+import com.example.enums.Constants;
 import com.example.hadoop.dao.basedao.HbaseDao;
 import com.example.hadoop.dao.basedao.HdfsDao;
-import com.example.util.Constants;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.filter.Filter;
@@ -17,7 +12,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 @Repository("fileDao")
@@ -35,32 +29,6 @@ public class FileDao {
      */
     public ResultScanner getResultScannerByUserFile(Filter filter) {
         return hbaseDao.getResultScannerByFilter(Constants.TABLE_USERFILE, filter);
-    }
-
-    /**
-     * 创建表
-     * @category create 'tableName','family1','family2','family3'
-     * @param tableName
-     * @param family
-     * @throws Exception
-     */
-    public static void createTable(String tableName, String[] family) throws IOException {
-        Admin admin = HbaseConn.getConn().getAdmin();
-
-        TableName tn = TableName.valueOf(tableName);
-        HTableDescriptor desc = new HTableDescriptor(tn);
-        for (int i = 0; i < family.length; i++) {
-            desc.addFamily(new HColumnDescriptor(family[i]));
-        }
-        if (admin.tableExists(tn)) {
-            System.out.println("createTable => table Exists!");
-            admin.disableTable(tn);
-            admin.deleteTable(tn);
-            admin.createTable(desc);
-        } else {
-            admin.createTable(desc);
-            System.out.println("createTable => create Success! => " + tn);
-        }
     }
 
     /**

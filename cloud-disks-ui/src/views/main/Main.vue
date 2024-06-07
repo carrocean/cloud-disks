@@ -424,28 +424,28 @@ const moveFolderBatch = () => {
 };
 
 const moveFolderDone = async (folderId) => {
-  if(currentFolder.value.fileId==folderId){
-    proxy.Message.warning("文件正在当前目录");
-    return;
-  }
-  let fileIdArray = [];
-  if(currentMoveFile.value.fileId){
-    fileIdsArray.push(currentMoveFile.value.fileId);
-  }else{
-    fileIdsArray = fileIdsArray.concat(selectFileIdList.value);
-  }
-  let result = await proxy.Request({
-    url: api.changeFileFolder,
-    params:{
-      fileIds: fileIdsArray.join(","),
-      filePid: folderId,
-    }, 
-  });
-  if (!result) {
-    return;
-  }
-  folderSelectRef.value.close();
-  loadDataList();
+  // if(currentFolder.value.fileId==folderId){
+  //   proxy.Message.warning("文件正在当前目录");
+  //   return;
+  // }
+  // let fileIdArray = [];
+  // if(currentMoveFile.value.fileId){
+  //   fileIdsArray.push(currentMoveFile.value.fileId);
+  // }else{
+  //   fileIdsArray = fileIdsArray.concat(selectFileIdList.value);
+  // }
+  // let result = await proxy.Request({
+  //   url: api.changeFileFolder,
+  //   params:{
+  //     fileIds: fileIdsArray.join(","),
+  //     filePid: folderId,
+  //   },
+  // });
+  // if (!result) {
+  //   return;
+  // }
+  // folderSelectRef.value.close();
+  // loadDataList();
 };
 
 // 文件下载

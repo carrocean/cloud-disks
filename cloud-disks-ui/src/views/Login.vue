@@ -13,7 +13,7 @@
           </el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item prop="pwd" v-if="opType == 1">
+        <el-form-item prop="pwd">
           <el-input type="password" size="large" placeholder="请输入密码" v-model.trim="formData.pwd" show-password
                     maxLength="150">
             <template #prefix>
@@ -21,49 +21,19 @@
             </template>
           </el-input>
         </el-form-item>
-        <!-- 注册 -->
-        <div v-if="opType == 0 || opType == 2">
-          <!-- 输入昵称 -->
-          <el-form-item prop="nickName" v-if="opType == 0">
-            <el-input size="large" placeholder="请输入昵称" v-model.trim="formData.nickName" maxlength="20">
-              <template #prefix>
-                <span class="iconfont icon-edit"></span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="pwd" v-if="opType == 2 || opType == 0">
-            <el-input type="password" size="large" placeholder="请输入密码" show-password
-                      v-model.trim="formData.pwd">
-              <template #prefix>
-                <span class="iconfont icon-password"></span>
-              </template>
-            </el-input>
-          </el-form-item>
 
-        </div>
-        <!-- 登录 -->
-        <el-form-item v-if="opType == 1">
+        <el-form-item >
           <div class="rememberme-panel">
             <el-checkbox>记住我</el-checkbox>
           </div>
           <div class="no-account">
-            <a href="#" class="a-link" @click="showPanel(2)">忘记密码</a>
-            <a href="#" class="a-link" @click="showPanel(0)">注册</a>
+            <a href="#" class="a-link" @click="toRegister">注册</a>
           </div>
-        </el-form-item>
-        <!-- 忘记密码 -->
-        <el-form-item v-if="opType == 2">
-          <a href="#" class="a-link" @click="showPanel(1)">去登录？</a>
-        </el-form-item>
-        <el-form-item v-if="opType == 0">
-          <a href="#" class="a-link" @click="showPanel(1)">已有账号？去登录</a>
         </el-form-item>
 
         <el-form-item>
           <el-button type="primary" class="op-btn" size="large" @click="doSubmit">
-            <span v-if="opType == 1">登录</span>
-            <span v-if="opType == 0">注册</span>
-            <span v-if="opType == 2">重置密码</span>
+            <span>登录</span>
           </el-button>
         </el-form-item>
       </el-form>
@@ -72,78 +42,46 @@
 </template>
 
 <script setup>
-import {useRoute, useRouter} from "vue-router";
-import {ref, reactive, getCurrentInstance, nextTick} from "vue";
-// import md5 from "js-md5";
-import {login, register} from "@/api/user.js"
-import axios from 'axios';
+import {login} from "@/api/user.js"
+import router from "@/router/index.js";
+import {ref, watch} from "vue";
 import {ElMessage} from "element-plus";
 
-const {proxy} = getCurrentInstance();
-const router = useRouter();
+const formData = ref({}); // 表单数据
 
-//操作类型0.注册 1.登录 2.忘记密码
-const opType = ref(1);
-const showPanel = (type) => {
-  opType.value = type;
-  // restForm();
-};
-var formData = ref({});
-var formDataRef = ref();
+// 表单验证规则
 const rules = {
-  userName: [
-    {required: true, message: "请输入正确的账号"},
-    // { validator: proxy.Verify.UserName, message: "请输入正确的账号" }
-
-  ],
-  pwd:
-    [{required: true, message: "请输入正确的密码"},
-      {validator: proxy.Verify.password, message: "请输入正确的密码"}],
-
-  nickName: [{required: true, message: "请输入正确的昵称"}],
+  userName: [{required: true, message: "请输入正确的账号"},],
+  pwd: [{required: true, message: "请输入正确的密码"},],
 };
 
-const doSubmit = async () => {
-  try {
-    if (opType.value === 1) {
-      // 登录操作
-      login(formData.value).then(res => {
-        console.log(res)
-        if (res.code === 200) {
-          ElMessage.success("登录成功");
-          window.sessionStorage.setItem('token', res.data.token);
-          router.push('/main/all');
-        } else {
-          ElMessage.error("账号或密码错误");
-        }
 
-      }).catch(err => {
-        //请求失败，做相应处理
-        console.log(err)
-      })
-    } else if (opType.value === 0) {
-      // 注册操作
+/**
+ * 跳转到注册页面方法
+ */
+function toRegister() {
+  router.push('/register')
+}
 
-      register(formData.value).then(res => {
-        console.log(res)
-        if (res.code === 200) {
-          ElMessage.success("注册成功");
-          showPanel(1); // 假设showPanel(1)会将表单切换到登录面板
-        } else {
-
-          ElMessage.error("注册失败");
-        }
-      }).catch(err => {
-        //请求失败，做相应处理
-        console.log(err)
-      })
+/**
+ * 提交表单方法
+ */
+function doSubmit() {
+  login(formData.value).then(res => {
+    if (res.code === 200) {
+      ElMessage.success("登录成功");
+      window.sessionStorage.setItem('token', res.data.token);
+      router.push('/main/all');
+    } else {
+      ElMessage.error("账号或密码错误");
     }
-    // 可以根据需要添加更多操作类型的情况
-  } catch (error) {
-    console.error('Error submitting form:', error);
-    // 可以根据错误类型进行更详细的错误处理
-  }
-};
+  }).catch(err => {
+    //请求失败，做相应处理
+    console.log(err)
+  })
+}
+
+
 
 
 </script>

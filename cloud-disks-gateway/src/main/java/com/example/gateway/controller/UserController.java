@@ -1,6 +1,7 @@
 package com.example.gateway.controller;
 
 import com.example.entity.UserEntity;
+import com.example.enums.Constants;
 import com.example.service.impl.UserServiceImpl;
 import com.example.mapper.UserMapper;
 import com.example.util.Result;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,11 +26,14 @@ public class UserController {
     UserMapper userMapper;
 
     @PostMapping("/login")
-    public Result login(@RequestBody UserEntity newUser) {
+    public Result login(HttpServletRequest request,@RequestBody UserEntity newUser) {
         Result result;
         UserEntity dbUser = userServiceImpl.loginService(newUser);
-        if (dbUser != null)
+        if (dbUser != null) {
             result = ResultGenerator.getSuccessResult(dbUser);
+            HttpSession session = request.getSession();
+            session.setAttribute(Constants.currentUserSessionKey, dbUser);
+        }
         else result = ResultGenerator.getFailResult("登录失败");
         return result;
     }

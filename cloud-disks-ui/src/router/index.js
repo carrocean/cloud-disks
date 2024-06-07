@@ -11,12 +11,17 @@ const router = createRouter({
     },*/
     {
       path: '/',
-      redirect:'/Login'
+      redirect:'/login'
     },
     {
-      path: '/Login',
-      name: 'Login',
+      path: '/login',
+      name: 'login',
       component: () => import('../views/Login.vue')
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/Register.vue')
     },
     {
       path: '/',

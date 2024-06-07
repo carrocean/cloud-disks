@@ -3,6 +3,7 @@ package com.example.gateway.controller;
 import com.example.entity.FileEntity;
 import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
+import com.example.enums.Constants;
 import com.example.service.FileService;
 import com.example.util.*;
 import net.sf.json.JSONObject;
@@ -86,10 +87,10 @@ public class FileController {
      * @throws IOException
      */
     @RequestMapping("/uploadFile")
-    public ModelAndView uploadFile(HttpServletRequest request, HttpSession httpSession,
-                                   @RequestParam(value = "dir") String dir,
-                                   @RequestParam(value = "originalDir") String originalDir,
-                                   @RequestParam(value = "parentid") long parentid) throws IOException {
+    public AjaxResult uploadFile(HttpServletRequest request, HttpSession httpSession,
+                                   @RequestParam(value = "dir" ,required = false, defaultValue = "/ff") String dir,
+                                   @RequestParam(value = "originalDir",required = false, defaultValue = "/ff") String originalDir,
+                                   @RequestParam(value = "parentid",required = false,defaultValue = "0") long parentid) throws IOException {
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
         if (multipartResolver.isMultipart(request)) {
@@ -129,7 +130,7 @@ public class FileController {
                 inputStream.close();
             }
         }
-        return null;
+        return AjaxResult.success();
     }
 
     /**

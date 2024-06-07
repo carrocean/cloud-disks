@@ -29,8 +29,8 @@
             </span>
             <!--状态描述-->
             <span class="stauts" :style="{ color: STATUS[item.status].color }">
-              {{ 
-                item.status == "fail" ? item.errorMsg: STATUS[item.status].desc  
+              {{
+                item.status == "fail" ? item.errorMsg: STATUS[item.status].desc
               }}
             </span>
             <!--上传中-->
@@ -54,7 +54,7 @@
           ></el-progress>
           <div class="op-btn">
             <span v-if="item.status === STATUS.uploading.value">
-              <span 
+              <span
                 :width="28"
                 :class="['btn-item','iconfont','icon-'+'upload']"
                 v-if="item.pause"
@@ -62,40 +62,40 @@
                 @click="pauseUpload(item.uid)"
                 >
               </span>
-             
-              <span 
-                v-else 
+
+              <span
+                v-else
                 :width="28"
                 :class="['btn-item','iconfont','icon-'+'pause']"
                 title="暂停"
                 @click="pauseUpload(item.uid)"
                 >
               </span>
-             
+
             </span>
             <span
                 :width="28"
                 :class="['btn-item','iconfont','icon-'+'del']"
                 title="删除"
                 v-if="
-                item.status!=STATUS.init.value && 
-                item.status!=STATUS.upload_finish.value && 
+                item.status!=STATUS.init.value &&
+                item.status!=STATUS.upload_finish.value &&
                 item.status!=STATUS.upload_seconds.value
                 "
                 @click="delUpload(item.uid,index)"
               >
             </span>
-          
+
             <span
                 :width="28"
                 :class="['btn-item','iconfont','icon-'+'clean']"
                 title="清除"
-                v-if="item.status==STATUS.upload_finish.value 
+                v-if="item.status==STATUS.upload_finish.value
                 || item.status==STATUS.upload_seconds.value"
                 @click="delUpload(item.uid,index)"
               >
             </span>
-           
+
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@
 import {ref ,reactive, getCurrentInstance, nextTick } from "vue"
 const {proxy} = getCurrentInstance();
 import SparkMD5 from "spark-md5";
-// import {uploadFile,  } from '@/api/file.js';
+// import {uploadFile } from '@/api/file.js';
 const api = {
   upload:"/file/uploadFile",
 };
@@ -198,7 +198,7 @@ const addFile = async (file, filePid) => {
 };
 defineExpose({addFile});
 
-//计算MD5 
+//计算MD5
 const computeMd5 = (fileItem) => {
   let file = fileItem.file;
   let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
@@ -211,7 +211,7 @@ const computeMd5 = (fileItem) => {
     let start = currentChunk * chunkSize;
     let end = start + chunkSize >= file.size ? file.size : start + chunkSize;
     fileReader.readAsArrayBuffer(blobSlice.call(file,start,end));
-    
+
   };
   loadNext();
 
@@ -243,7 +243,7 @@ const computeMd5 = (fileItem) => {
       resolve(fileItem.uid);
     }
   }).catch((error) => {
-    console.error(error); 
+    console.error(error);
     return null;
   });
 };
