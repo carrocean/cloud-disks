@@ -169,7 +169,6 @@ const delFile = (row) => {
       return;
     }
     loadDataList();
-    emit=("reload");
   });
 };
 
@@ -185,7 +184,6 @@ const delBatch = () => {
       return;
     }
     loadDataList();
-    emit=("reload");
   });
 };
 

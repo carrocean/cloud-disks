@@ -2,7 +2,6 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
-import axios from 'axios';
 import router from './router'
 //引入Element-plus
 import ElementPlus from 'element-plus'
@@ -18,15 +17,17 @@ import Verify from './utils/Verify'
 import Message from './utils/Message'
 import Confirm from './utils/Confirm'
 import Utils from './utils/Utils'
-// import Request from './utils/Request'
 //自定义组件
 import Table from '@/components/Table.vue'
 import Icon from '@/components/Icon.vue'
 import NoData from '@/components/NoData.vue'
 import FolderSelect from '@/components/FolderSelect.vue'
+// 引入全局函数
+import common from '@/libs/globalFunction/common.js'
+// 引入自定义的全局配置
+import config from '@/config/index.js'
 
 const app = createApp(App)
-
 
 app.use(ElementPlus)
 app.use(router)
@@ -43,4 +44,6 @@ app.config.globalProperties.Request=Request;
 app.config.globalProperties.Confirm=Confirm;
 app.config.globalProperties.Utils=Utils;
 app.config.globalProperties.VueCookies=VueCookies;
+app.config.globalProperties.$config = config
+app.config.globalProperties.$common = common
 app.mount('#app')

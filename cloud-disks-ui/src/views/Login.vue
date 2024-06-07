@@ -44,8 +44,9 @@
 <script setup>
 import {login} from "@/api/user.js"
 import router from "@/router/index.js";
-import {ref, watch} from "vue";
+import {getCurrentInstance, ref, watch} from "vue";
 import {ElMessage} from "element-plus";
+const {proxy} = getCurrentInstance()
 
 const formData = ref({}); // 表单数据
 
@@ -69,8 +70,8 @@ function toRegister() {
 function doSubmit() {
   login(formData.value).then(res => {
     if (res.code === 200) {
+      proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
       ElMessage.success("登录成功");
-      window.sessionStorage.setItem('token', res.data.token);
       router.push('/main/all');
     } else {
       ElMessage.error("账号或密码错误");
