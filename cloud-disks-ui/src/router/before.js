@@ -11,14 +11,14 @@ router.beforeEach((to, from, next) => {
         // 如果访问的是登录页，重定向到主页
         if (to.path === '/login') {
             alert('登录成功，自动跳转到首页！');
-            next('/home');
+            next('/file');
         } else {
             // 如果是访问主页或其他需要登录后才能访问的页面，执行正常逻辑
             next(); // 允许路由跳转
         }
     } else {
         // 如果没有token，且尝试访问需要登录的页面，则重定向到登录页
-        if (to.path === '/home' || to.path === '/') {
+        if (to.path === '/file' || to.path === '/') {
             next('/login');
         } else {
             next(); // 允许其他不需要登录的页面访问

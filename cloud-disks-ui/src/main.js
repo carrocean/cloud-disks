@@ -5,8 +5,8 @@ import App from './App.vue'
 import router from './router'
 //引入Element-plus
 import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css' 
-
+import 'element-plus/dist/index.css'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import '@/assets/icon/iconfont.css'
 import '@/assets/base.scss'
 //引入VueCookies
@@ -37,6 +37,9 @@ app.component("Table", Table);
 app.component("Icon", Icon);
 app.component("NoData", NoData);
 app.component("FolderSelect", FolderSelect);
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
 
 
 //配置全局组件

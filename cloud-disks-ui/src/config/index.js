@@ -3,6 +3,10 @@
  */
 const config = {
     /**
+     * 网盘名称
+     */
+    siteName: 'QST网盘',
+    /**
      * 请求后台接口 URL 代理时的上下文
      * @description 仅适用于本地开发环境代理时使用，
      * 生产环境需要在 nginx 配置中将 /api/ 代理到生产环境后台地址

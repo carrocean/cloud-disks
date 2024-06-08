@@ -13,27 +13,19 @@
   </div>
 </template>
 
-<script>
-import AsideMenu from '_c/file/AsideMenu.vue'
-import FileList from '_c/file/FileList.vue'
+<script setup>
+import AsideMenu from '@/components/file/AsideMenu.vue'
+// import FileList from '_c/file/FileList.vue'
 
-export default {
-  name: 'File',
-  components: {
-    AsideMenu,
-    FileList
-  },
-  methods: {
-    // 显示拖拽上传文件遮罩
-    showUploadMask(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      console.log("showUploadMask")
-      this.$store.commit("showUploadMask");
-    },
-  },
-
+// 显示拖拽上传文件遮罩
+function showUploadMask(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  console.log("showUploadMask")
+  this.$store.commit("showUploadMask");
 }
+
+
 </script>
 
 <style lang="stylus" scoped>

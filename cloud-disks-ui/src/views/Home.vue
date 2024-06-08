@@ -62,9 +62,6 @@ const uploadCallbackHandler = () => {
     });
 };
 
-const userInfo = ref({
-    nickName: "张三",
-}
 //proxy.Vuecookies.get("userInfo")
 );
 

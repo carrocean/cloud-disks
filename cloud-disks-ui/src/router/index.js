@@ -19,29 +19,17 @@ const router = createRouter({
       component: () => import('../views/Register.vue')
     },
     {
-      path: '/',
-      redirect:'/home'
+      path: '/file',
+      name: 'file',
+      component: () => import( '../views/File.vue'),
+      meta: {
+        requireAuth: true, //  当前路由是否需要登录才可进入
+        title: '网盘',
+        content: {
+          description: '图片 文档 视频 音乐 其他 回收站 我的分享'
+        }
+      }
     },
-    {
-      path: '/home',
-      name: 'home',
-      component: () => import("../views/Home.vue"),
-      children:[
-        {
-          path: 'file',
-          name: 'file',
-          component: () => import( '../views/File.vue'),
-          meta: {
-            requireAuth: true, //  当前路由是否需要登录才可进入
-            title: '网盘',
-            content: {
-              description: '图片 文档 视频 音乐 其他 回收站 我的分享'
-            }
-          }
-        },
-        
-      ]
-    }
   ]
 })
 
