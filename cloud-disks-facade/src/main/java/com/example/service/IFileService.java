@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.entity.FileEntity;
 import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.List;
@@ -107,4 +108,6 @@ public interface IFileService {
      * @param flag
      */
     public void copyOrMoveHdfs(UserEntity user, FileEntity sourceFile, FileEntity destFile, boolean flag);
+
+    void upload(UserEntity user, MultipartFile file);
 }

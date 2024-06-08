@@ -15,7 +15,7 @@
 
 <script setup>
 import AsideMenu from '@/components/file/AsideMenu.vue'
-// import FileList from '_c/file/FileList.vue'
+import FileList from '@/components/file/FileList.vue'
 
 // 显示拖拽上传文件遮罩
 function showUploadMask(e) {

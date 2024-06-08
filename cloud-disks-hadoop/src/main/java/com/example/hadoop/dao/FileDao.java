@@ -12,14 +12,16 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.io.InputStream;
+
 
 @Repository("fileDao")
 public class FileDao {
-    @Autowired
+    @Resource
     private HbaseDao hbaseDao;
 
-    @Autowired
+    @Resource
     private HdfsDao hdfsDao;
 
     /**

@@ -1,0 +1,23 @@
+git基本命令
+
+拉取仓库
+git clone https://github.com/carrocean/cloud-disks.git
+
+查看当前分支
+git branch 
+
+新建分支
+git branch 分支名
+
+切换分支
+git checkout 分支名
+
+git add .
+
+git commit -m 'feat: 你做了什么'
+
+拉取github上的远程仓库对应分支的代码
+git pull origin 分支名
+
+推送本地更新的代码到github
+git push origin 分支名

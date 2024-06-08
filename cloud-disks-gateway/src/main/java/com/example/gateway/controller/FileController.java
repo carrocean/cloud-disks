@@ -5,12 +5,11 @@ import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
 import com.example.enums.Constants;
 import com.example.service.IFileService;
+import com.example.service.IUserService;
 import com.example.util.*;
 import net.sf.json.JSONObject;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -31,8 +30,19 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/cloud/disks/file")
 public class FileController {
-    @Resource
+    @Autowired
     private IFileService fileService;
+
+    @Autowired
+    private IUserService userService;
+
+
+    @PostMapping("/upload")
+    public AjaxResult upload(@RequestHeader(value = "token") String token,MultipartFile file) {
+        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
+        fileService.upload(user, file);
+        return AjaxResult.success("上传成功");
+    }
 
     /**
      * 列出文件列表

@@ -2,7 +2,7 @@
   <div class="side-menu-wrapper">
     <!-- collapse 属性：控制菜单收缩展开 -->
     <el-menu
-        class="side-menu "
+        class="side-menu"
         :default-active="activeIndex"
         :router="true"
         :collapse="isCollapse"
@@ -136,18 +136,9 @@ onMounted(() => {
   // 高度设置为屏幕高度减去顶部导航栏的高度 height: calc(100vh - 127px);
     overflow: auto;
   // 调整滚动条样式 setScrollbar(6 px, transparent, #C0C4CC);
-
-    .el-menu-item.is-active {
-      background: #ecf5ff;
-    }
-
     .my-file, .recovery {
       box-shadow: 0 4px 12px 0 $BorderExtralight;
     }
-  }
-
-  >>> .el-menu {
-    background: transparent;
   }
 
 // 对展开状态下的菜单设置宽度
@@ -155,70 +146,6 @@ onMounted(() => {
   .side-menu:not(.el-menu--collapse) {
     width: 210px;
     height: calc(100vh - 61px);
-  }
-
-// 存储空间展示区
-
-  .storage-wrapper {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    box-shadow: 0 -2px 12px 0 $BorderExtralight;
-    border-right: solid 1px #e6e6e6;
-    box-sizing: border-box;
-    width: calc(100% - 11px);
-    height: 66px;
-    padding: 16px;
-    z-index: 2;
-    color: $PrimaryText;
-
-    .text {
-      margin-top: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      flex-wrap: wrap;
-    }
-  }
-
-  .storage-wrapper.fold {
-    padding: 0;
-
-    >>> .el-progress--circle {
-      margin: 0 auto;
-      width: 32px;
-      display: block;
-    }
-
-    .text {
-      font-size: 12px;
-      justify-content: center;
-    }
-  }
-
-// 折叠图标调整样式
-
-  .aside-title {
-    position: absolute;
-    top: calc(50% - 50px);
-    right: 0;
-    z-index: 2;
-    background: $BorderBase;
-    color: #fff;
-    width: 12px;
-    height: 100px;
-    line-height: 100px;
-    cursor: pointer;
-    border-radius: 0 16px 16px 0;
-
-    &:hover {
-      opacity: 0.7;
-    }
-
-    .icon {
-      font-size: 12px;
-    }
   }
 }
 </style>

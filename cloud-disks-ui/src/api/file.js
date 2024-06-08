@@ -16,6 +16,18 @@ var managerUrl = {
     copyOrMoveFile: prefix + "copyOrMoveFile",
     downloadFile: prefix + "downloadFile",
     viewFile: prefix + "viewFile",
+    upload: prefix + 'upload'
+}
+
+export function upload(data) {
+    return request({
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        url: managerUrl.upload,
+        method: 'post',
+        data: data
+    });
 }
 
 // 列出文件列表
@@ -47,18 +59,18 @@ export function showUpload(data) {
 }
 
 // 上传文件
-export function uploadFile(data) {
-    const { dir, originalDir, parentid } = data;
-    return request({
-        url: managerUrl.uploadFile,
-        method: 'post',
-        data: {
-            dir,
-            originalDir,
-            parentid
-        }
-    });
-}
+// export function uploadFile(data) {
+//     const { dir, originalDir, parentid } = data;
+//     return request({
+//         url: managerUrl.uploadFile,
+//         method: 'post',
+//         data: {
+//             dir,
+//             originalDir,
+//             parentid
+//         }
+//     });
+// }
 
 // 创建文件夹
 export function makeFolder(data) {

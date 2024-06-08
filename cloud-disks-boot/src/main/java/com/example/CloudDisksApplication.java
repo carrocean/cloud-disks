@@ -6,7 +6,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
 @SpringBootApplication
-@MapperScan("com.example.mapper")
+@MapperScan({"com.example.hadoop.dao", "com.example.mapper"})
 public class CloudDisksApplication {
 
     public static void main(String[] args) {

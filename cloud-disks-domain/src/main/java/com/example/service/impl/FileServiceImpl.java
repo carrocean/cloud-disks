@@ -5,15 +5,22 @@ import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
 import com.example.enums.Constants;
 import com.example.hadoop.dao.FileDao;
+import com.example.hadoop.dao.basedao.HdfsDao;
 import com.example.service.IFileService;
 import com.example.util.DateUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.filter.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,8 +29,11 @@ import java.util.List;
 
 @Service("fileService")
 public class FileServiceImpl implements IFileService {
-    @Autowired
+    @Resource
     private FileDao fileDao;
+
+    @Resource
+    private HdfsDao hdfsDao;
 
     /**
      * 获得文件列表，查看文件或目录列表
@@ -287,6 +297,33 @@ public class FileServiceImpl implements IFileService {
     @Override
     public void copyOrMoveHdfs(UserEntity user, FileEntity sourceFile, FileEntity destFile, boolean flag) {
         fileDao.copyOrMoveFile(user, sourceFile, destFile, flag);
+    }
+
+    @Override
+    public void upload(UserEntity user, MultipartFile file) {
+        try {
+            // 将 MultipartFile 转换为 InputStream
+            InputStream inputStream = file.getInputStream();
+
+            // 创建 FileEntity 实例并设置属性
+            FileEntity fileEntity = new FileEntity();
+            fileEntity.setOriginalName(file.getOriginalFilename());
+            fileEntity.setName(file.getOriginalFilename()); // 这里假设存储在HDFS中的文件名与原文件名相同
+            fileEntity.setFile(true);
+            fileEntity.setDir(false);
+            fileEntity.setSize(String.valueOf(file.getSize())); // 设置文件大小
+            fileEntity.setPath(fileEntity.getName()); // 设置文件在HDFS中的路径
+            fileEntity.setDate("2024-06-08 12:00:00"); // 设置日期，这里假设一个固定值
+
+            // 调用上传文件到HDFS的方法
+            hdfsDao.put(inputStream, fileEntity, user);
+
+            // 关闭输入流
+            IOUtils.closeQuietly(inputStream);
+        } catch (IOException e) {
+            // 处理异常
+            e.printStackTrace();
+        }
     }
 
 }
