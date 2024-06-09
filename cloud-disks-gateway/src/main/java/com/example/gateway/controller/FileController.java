@@ -8,6 +8,8 @@ import com.example.service.IFileService;
 import com.example.service.IUserService;
 import com.example.util.*;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +32,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/cloud/disks/file")
 public class FileController {
+
+    // 日志记录
+    private static final Logger log = LoggerFactory.getLogger(FileController.class);
+
     @Autowired
     private IFileService fileService;
 
@@ -41,7 +47,8 @@ public class FileController {
     public AjaxResult upload(@RequestHeader(value = "token") String token,MultipartFile file) {
         UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
         fileService.upload(user, file);
-        return AjaxResult.success("上传成功");
+        log.info("上传成功");
+        return AjaxResult.success();
     }
 
     /**
