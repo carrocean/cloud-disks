@@ -54,24 +54,12 @@ public class FileController {
     /**
      * 列出文件列表
      *
-     * @param httpSession
      * @return
      */
     @RequestMapping("/fileList")
-    public ModelAndView fileList(HttpSession httpSession,
-                                 @RequestParam(value = "dir", defaultValue = "/") String dir,
-                                 @RequestParam(value = "originalDir", defaultValue = "/") String originalDir,
-                                 @RequestParam(value = "parentid", defaultValue = "0") long parentid) {
-        UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
-        List<FileEntity> filelist = fileService.getFileList(user, parentid);
-        List<FileEntity> breadcrumblist = fileService.getBreadcrumb(dir);
-        ModelAndView modelAndView = new ModelAndView("/cloud/list");
-        modelAndView.addObject("filelist", filelist);
-        modelAndView.addObject("dir", dir);
-        modelAndView.addObject("originalDir", originalDir);
-        modelAndView.addObject("parentid", parentid);
-        modelAndView.addObject("breadcrumblist", breadcrumblist);
-        return modelAndView;
+    public void fileList() {
+
+        return ;
     }
 
     /**
@@ -93,61 +81,6 @@ public class FileController {
         return modelAndView;
     }
 
-    /**
-     * 上传文件
-     *
-     * @param request
-     * @param httpSession
-     * @param dir
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping("/uploadFile")
-    public AjaxResult uploadFile(HttpServletRequest request, HttpSession httpSession,
-                                   @RequestParam(value = "dir" ,required = false, defaultValue = "/ff") String dir,
-                                   @RequestParam(value = "originalDir",required = false, defaultValue = "/ff") String originalDir,
-                                   @RequestParam(value = "parentid",required = false,defaultValue = "0") long parentid) throws IOException {
-        UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
-        if (multipartResolver.isMultipart(request)) {
-            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-            multipartRequest.setCharacterEncoding("UTF-8");
-            Map<String, MultipartFile> fms = multipartRequest.getFileMap();
-            for (Map.Entry<String, MultipartFile> entity : fms.entrySet()) {
-                MultipartFile multipartFile = entity.getValue();
-                InputStream inputStream = multipartFile.getInputStream();
-
-                int splitIndex = multipartFile.getOriginalFilename().lastIndexOf(".");
-                String name = System.nanoTime() + "." + multipartFile.getOriginalFilename().substring(splitIndex + 1);
-
-                FileEntity file = new FileEntity();
-                file.setDir(false);
-                file.setFile(true);
-                file.setSize(FilesUtil.FormetFileSize(multipartFile.getSize()));
-                file.setOriginalName(multipartFile.getOriginalFilename());
-                file.setName(name);
-                if (dir.equals("/")) {
-                    file.setPath(dir + name);
-                    file.setOriginalPath(originalDir);
-                } else {
-                    file.setPath(dir + "/" + name);
-                    file.setOriginalPath(originalDir + "/");
-                }
-                file.setViewflag("N");
-                String nameSufix = FilesUtil.getFileSufix(name);
-                for (int i = 0; i < Constants.sufix.length; i++) {
-                    if (nameSufix.equals(Constants.sufix[i])) {
-                        file.setViewflag("Y");
-                        break;
-                    }
-                }
-                file.setDate(DateUtil.DateToString("yyyy-MM-dd HH:mm:ss", new Date()));
-                fileService.uploadFile(inputStream, file, user, parentid);
-                inputStream.close();
-            }
-        }
-        return AjaxResult.success();
-    }
 
     /**
      * 创建文件夹
