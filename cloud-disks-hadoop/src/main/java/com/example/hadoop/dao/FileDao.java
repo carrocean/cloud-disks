@@ -25,6 +25,26 @@ public class FileDao {
     private HdfsDao hdfsDao;
 
     /**
+     * 上传文件到hdfs中
+     * @param inputStream
+     * @param file
+     * @param user
+     */
+    public void upload(InputStream inputStream, FileEntity file, UserEntity user) {
+        hdfsDao.put(inputStream, file, user);
+    }
+
+    /**
+     * 下载文件，从hdfs中
+     * @param user
+     * @param file
+     * @param local
+     */
+    public boolean downloadFile(UserEntity user, FileEntity file, String local) {
+        return hdfsDao.download(user, file, local);
+    }
+
+    /**
      * 以一定规则扫描user_file表
      * @param filter
      * @return
@@ -75,15 +95,6 @@ public class FileDao {
         return rowKey;
     }
 
-    /**
-     * 上传文件到hdfs中
-     * @param inputStream
-     * @param file
-     * @param user
-     */
-    public void upload(InputStream inputStream, FileEntity file, UserEntity user) {
-        hdfsDao.put(inputStream, file, user);
-    }
 
     /**
      * 向user_file表中添加信息，行健为：用户id_目录id_文件id，列值为文件id
@@ -152,15 +163,6 @@ public class FileDao {
         hbaseDao.updateOneData(Constants.TABLE_FILE, file.getId(), Constants.FAMILY_FILE_FILE, Constants.COLUMN_FILE_ORIGINALNAMEANDETC[0], newname);
     }
 
-    /**
-     * 下载文件，从hdfs中
-     * @param user
-     * @param file
-     * @param local
-     */
-    public boolean downloadFile(UserEntity user, FileEntity file, String local) {
-        return hdfsDao.download(user, file, local);
-    }
 
     /**
      * 复制或者移动文件或者目录

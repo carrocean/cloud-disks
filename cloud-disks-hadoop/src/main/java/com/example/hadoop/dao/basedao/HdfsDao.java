@@ -8,15 +8,23 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.util.Progressable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Repository("hdfsDao")
 public class HdfsDao {
+
+    // 日志记录
+    private static final Logger log = LoggerFactory.getLogger(HdfsDao.class);
+    
     private final String basePath = "/";
 
     /**
@@ -43,15 +51,40 @@ public class HdfsDao {
             OutputStream outputStream = HdfsConn.getFileSystem().create(new Path(formatPath), new Progressable() {
                 @Override
                 public void progress() {
-                    //System.out.println("upload OK");
+                    log.info("upload success");
                 }
             });
             IOUtils.copyBytes(inputStream, outputStream, 2048, true);
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
+    }
+
+    /**
+     * 下载文件
+     *
+     * @param userEntity
+     * @param fileEntity
+     * @param local
+     */
+    public boolean download(UserEntity userEntity, FileEntity fileEntity, String local) {
+        try {
+            String formatPath = formatPathMethod(userEntity, fileEntity);
+            if (HdfsConn.getFileSystem().exists(new Path(formatPath))) {
+                FSDataInputStream inputStream = HdfsConn.getFileSystem().open(new Path(formatPath));
+                OutputStream outputStream = Files.newOutputStream(Paths.get(local));
+                IOUtils.copyBytes(inputStream, outputStream, 4096, true);
+                log.info(local);
+                return true;
+            }
+        } catch (IllegalArgumentException e) {
+            log.error(String.valueOf(e));
+        } catch (IOException e) {
+            log.error(String.valueOf(e));
+        }
+        return false;
     }
 
     /**
@@ -67,9 +100,9 @@ public class HdfsDao {
                 HdfsConn.getFileSystem().mkdirs(new Path(formatPath));
             }
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
     }
 
@@ -86,9 +119,9 @@ public class HdfsDao {
                 HdfsConn.getFileSystem().delete(new Path(formatPath), true);
             }
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
     }
 
@@ -108,35 +141,10 @@ public class HdfsDao {
                 HdfsConn.getFileSystem().rename(new Path(formatPath), new Path(newformatPath));
             }
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
-    }
-
-    /**
-     * 下载文件
-     *
-     * @param userEntity
-     * @param fileEntity
-     * @param local
-     */
-    public boolean download(UserEntity userEntity, FileEntity fileEntity, String local) {
-        try {
-            String formatPath = formatPathMethod(userEntity, fileEntity);
-            if (HdfsConn.getFileSystem().exists(new Path(formatPath))) {
-                FSDataInputStream inputStream = HdfsConn.getFileSystem().open(new Path(formatPath));
-                OutputStream outputStream = new FileOutputStream(local);
-                IOUtils.copyBytes(inputStream, outputStream, 4096, true);
-                System.out.println(local);
-                return true;
-            }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
 
@@ -154,9 +162,9 @@ public class HdfsDao {
             String destFormatPath = formatPathMethod(userEntity, destFileEntity);
             FileUtil.copy(HdfsConn.getFileSystem(), new Path(sourceFormatPath), HdfsConn.getFileSystem(), new Path(destFormatPath), flag, true, HdfsConn.getConfiguration());
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
     }
 

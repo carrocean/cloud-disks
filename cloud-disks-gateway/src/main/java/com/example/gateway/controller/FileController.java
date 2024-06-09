@@ -43,11 +43,50 @@ public class FileController {
     private IUserService userService;
 
 
+    /**
+     * 上传文件
+     * @param token
+     * @param file
+     * @return
+     */
     @PostMapping("/upload")
     public AjaxResult upload(@RequestHeader(value = "token") String token,MultipartFile file) {
         UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
         fileService.upload(user, file);
         log.info("上传成功");
+        return AjaxResult.success();
+    }
+
+    /**
+     * 下载文件
+     * @param request
+     * @param token
+     * @param fileId
+     * @return
+     */
+    @RequestMapping("/downloadFile")
+    public AjaxResult downloadFile(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "fileId") String fileId) {
+        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
+        FileEntity file = fileService.getById(fileId);
+        try {
+            String local = request.getSession().getServletContext().getRealPath("/downloadFile/");
+            String myFile = local + file.getOriginalName();
+            if (!new java.io.File(myFile).exists()) {
+                java.io.File realPath = new java.io.File(local);
+                if (!realPath.exists()) {
+                    realPath.mkdirs();
+                }
+                if (fileService.downloadFile(user, file, myFile)) {
+                    return AjaxResult.success();
+                }else {
+                    return AjaxResult.error("文件不存在");
+                }
+            } else {
+                AjaxResult.error("文件已存在");
+            }
+        } catch (Exception e) {
+            log.error(String.valueOf(e));
+        }
         return AjaxResult.success();
     }
 
@@ -307,54 +346,6 @@ public class FileController {
         return null;
     }
 
-    /**
-     * 下载文件
-     *
-     * @param response
-     * @param httpSession
-     * @param request
-     * @param originalName
-     * @param path
-     * @return
-     */
-    @RequestMapping("/downloadFile")
-    public String downloadFile(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request,
-                               @RequestParam(value = "name") String name,
-                               @RequestParam(value = "originalName") String originalName,
-                               @RequestParam(value = "path") String path) {
-        JSONObject result = new JSONObject();
-        UserEntity user = new UserEntity();
-        user.setUserName(name);
-        FileEntity file = new FileEntity();
-        file.setOriginalName(originalName);
-        file.setPath(path);
-        try {
-            String local = request.getSession().getServletContext().getRealPath("/downloadFile/");
-            String myFile = local + originalName;
-            if (!new java.io.File(myFile).exists()) {
-                java.io.File realPath = new java.io.File(local);
-                if (!realPath.exists()) {
-                    realPath.mkdirs();
-                }
-                if (fileService.downloadFile(user, file, myFile)) {
-                    result.put("errres", true);
-                    result.put("errmsg", "下载成功！");
-                    result.put("url", "downloadFile\\" + originalName);
-                } else {
-                    result.put("errres", false);
-                    result.put("errmsg", "文件不存在！");
-                }
-            } else {
-                result.put("errres", true);
-                result.put("errmsg", "文件已经存在！");
-                result.put("url", "downloadFile\\" + originalName);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ResponseUtil.write(response, result);
-        return null;
-    }
 
     /**
      * 选择弹窗下载文件

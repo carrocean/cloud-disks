@@ -110,4 +110,6 @@ public interface IFileService {
     public void copyOrMoveHdfs(UserEntity user, FileEntity sourceFile, FileEntity destFile, boolean flag);
 
     void upload(UserEntity user, MultipartFile file);
+
+    FileEntity getById(String fileId);
 }

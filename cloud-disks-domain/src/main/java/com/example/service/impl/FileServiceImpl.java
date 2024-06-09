@@ -6,6 +6,7 @@ import com.example.entity.UserEntity;
 import com.example.enums.Constants;
 import com.example.hadoop.dao.FileDao;
 import com.example.hadoop.dao.basedao.HdfsDao;
+import com.example.mapper.FileMapper;
 import com.example.service.IFileService;
 import com.example.util.DateUtil;
 import org.apache.commons.io.FileUtils;
@@ -29,8 +30,11 @@ import java.util.List;
 
 @Service("fileService")
 public class FileServiceImpl implements IFileService {
-    @Resource
+    @Autowired
     private FileDao fileDao;
+
+    @Autowired
+    private FileMapper fileMapper;
 
     /**
      * 获得文件列表，查看文件或目录列表
@@ -233,7 +237,7 @@ public class FileServiceImpl implements IFileService {
     /**
      * 下载文件
      * @param user
-     * @param path
+     * @param file
      * @param local
      * @return
      */
@@ -319,6 +323,11 @@ public class FileServiceImpl implements IFileService {
             // 处理异常
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public FileEntity getById(String fileId) {
+        return fileMapper.getById(fileId);
     }
 
 }
