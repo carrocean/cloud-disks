@@ -23,9 +23,10 @@
             :action=uploadUrl
             :limit="1"
             :headers="headers"
+            :show-file-list="false"
         >
           <template #trigger>
-            <el-button type="primary">
+            <el-button type="primary" plain>
               <el-icon><Upload></Upload></el-icon>
               <span>上传</span>
             </el-button>
