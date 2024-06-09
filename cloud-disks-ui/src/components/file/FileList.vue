@@ -1,96 +1,130 @@
 <template>
-	<div class="file-list-wrapper">
-		<!-- 操作按钮 -->
-<!--		<el-header height="auto">-->
-<!--			<OperationMenu-->
-<!--				:fileType="fileType"-->
-<!--				:filePath="filePath"-->
-<!--				@getSearchFileList="getSearchFileList"-->
-<!--				@getTableDataByType="getTableDataByType"-->
-<!--			></OperationMenu>-->
-<!--		</el-header>-->
+  <div class="app-container">
 
-    <el-upload
-        :action=uploadUrl
-        :limit="1"
-        :headers="headers"
-    >
-      <template #trigger>
-        <el-button type="primary">选择文件</el-button>
-      </template>
-    </el-upload>
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px" style="float:right;">
+      <el-form-item label="文件名称" prop="title">
+        <el-input
+            v-model="queryParams.name"
+            placeholder="请输入文件名称"
+            clearable
+            style="width: 240px;"
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
 
-<!--		<div class="middle-wrapper">-->
-<!--			&lt;!&ndash; 面包屑导航栏 &ndash;&gt;-->
-<!--			<BreadCrumb-->
-<!--				class="breadcrumb"-->
-<!--				:fileType="fileType"-->
-<!--				:filePath="filePath"-->
-<!--				@getTableDataByType="getTableDataByType"-->
-<!--			></BreadCrumb>-->
-<!--		</div>-->
+    <el-row :gutter="10" class="mb10">
+      <el-col :span="1.5">
+        <el-upload
+            :action=uploadUrl
+            :limit="1"
+            :headers="headers"
+        >
+          <template #trigger>
+            <el-button type="primary">
+              <el-icon><Upload></Upload></el-icon>
+              <span>上传</span>
+            </el-button>
+          </template>
+        </el-upload>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+            type="danger"
+            plain
+            icon="Delete"
+            :disabled="multiple"
+            @click="handleDelete"
+        >删除</el-button>
+      </el-col>
+    </el-row>
 
-<!--		 文件列表-表格模式 -->
-<!--		<FileTable-->
-<!--			:fileType="fileType"-->
-<!--			:filePath="filePath"-->
-<!--			:fileList="fileList"-->
-<!--			:loading.sync="loading"-->
-<!--			v-if="fileModel === 0"-->
-<!--			@getTableDataByType="getTableDataByType"-->
-<!--			@click.native.right="handleClickRight"-->
-<!--		></FileTable>-->
+    <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="文件名称" align="left" prop="name">
+        <template #default="scope">
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="文件类型" align="left" prop="type">
+        <template #default="scope">
+          <span>{{ scope.row.type }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="大小" align="left" prop="size">
+        <template #default="scope">
+          <span>{{ scope.row.size }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="添加日期" align="center" prop="operTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.addTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+        <template #default="scope">
+          <el-button
+              type="text"
+              icon="Upload"
+              @click="handleDownLoad(scope.row)"
+          >下载</el-button>
+          <el-button
+              type="text"
+              icon="Share"
+              @click="handleShare(scope.row)"
+          >分享</el-button>
+          <el-button
+              type="text"
+              icon="Delete"
+              @click="handleDelete(scope.row)"
+          >删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
 
-		<!-- 图片-时间线模式 -->
-<!--		<FileTimeLine-->
-<!--			class="image-model"-->
-<!--			:fileList="fileList"-->
-<!--			:loading.sync="loading"-->
-<!--			v-if="fileModel === 2 && fileType === 1"-->
-<!--			@getTableDataByType="getTableDataByType"-->
-<!--			@click.native.right="handleClickRight"-->
-<!--		></FileTimeLine>-->
-
-<!--		<div class="pagination-wrapper">-->
-<!--			<div class="current-page-count">当前页{{ fileList.length }}条</div>-->
-<!--			&lt;!&ndash; 回收站不展示分页组件 &ndash;&gt;-->
-<!--			<el-pagination-->
-<!--				:current-page="pageData.currentPage"-->
-<!--				:page-size="pageData.pageCount"-->
-<!--				:total="pageData.total"-->
-<!--				:page-sizes="[10, 50, 100, 200]"-->
-<!--				:layout="-->
-<!--					screenWidth <= 768-->
-<!--						? 'total, prev, next, jumper'-->
-<!--						: 'sizes, total, prev, pager, next'-->
-<!--				"-->
-<!--				@current-change="handleCurrentChange"-->
-<!--				@size-change="handleSizeChange"-->
-<!--				v-if="fileType !== 6"-->
-<!--			>-->
-<!--			</el-pagination>-->
-<!--		</div>-->
-	</div>
+  </div>
 </template>
 
 <script setup>
-import OperationMenu from '@/components/file/components/OperationMenu.vue'
-import {computed, ref} from "vue";
-import {useRoute} from "vue-router";
+import {fileList} from "@/api/file.js";
+import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import {useRouter} from "vue-router";
 import common from "@/libs/globalFunction/common.js";
 import globalConfig from "@/config/index.js";
-// import BreadCrumb from '_c/common/BreadCrumb.vue'
-// import FileTable from '_c/common/FileTable.vue'
-// import FileGrid from './components/FileGrid.vue'
-// import FileTimeLine from './components/FileTimeLine.vue'
+import {ElMessage} from "element-plus";
+import {Upload} from "@element-plus/icons-vue";
+import {parseTime} from "element-plus/es/components/time-select/src/utils";
 
-// import {
-// 	getFileListByPath,
-// 	getFileListByType,
-// 	getRecoveryFile,
-// 	getMyShareFileList,
-// 	searchFile
-// } from '@/api/file.js'
+
+const { proxy } = getCurrentInstance();
+
+const router = useRouter();
+const operlogList = ref([]);
+const loading = ref(false);
+const showSearch = ref(true);
+const ids = ref([]);
+const multiple = ref(true);
+const total = ref(0);
+const title = ref("");
+const dateRange = ref([]);
+const defaultSort = ref({ prop: "operTime", order: "descending" });
+
+const data = reactive({
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    title: undefined,
+    operName: undefined,
+    businessType: undefined,
+    status: undefined
+  }
+});
+
+const { queryParams} = toRefs(data);
 
 const token = common.getCookies(globalConfig.tokenKeyName)
 const headers = ref({
@@ -99,93 +133,71 @@ const headers = ref({
 const uploadUrl = ref('http://localhost:30001/api/cloud/disks/file/upload')
 
 
-// const route = useRoute()
-// const fileType = computed(() => route.query.fileType ? Number(route.query.fileType) : 0)
-// const filePath = computed(() => route.query.filePath ? route.query.filePath : '/')
+/** 查询文件 */
+function getList() {
+  loading.value = true;
+  fileList(queryParams.value, dateRange.value).then(response => {
+    operlogList.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  });
+}
+/** 搜索按钮操作 */
+function handleQuery() {
+  queryParams.value.pageNum = 1;
+  getList();
+}
+/** 重置按钮操作 */
+function resetQuery() {
+  dateRange.value = [];
+  proxy.resetForm("queryRef");
+  proxy.$refs["operlogRef"].sort(defaultSort.value.prop, defaultSort.value.order);
+  handleQuery();
+}
+/** 多选框选中数据 */
+function handleSelectionChange(selection) {
+  ids.value = selection.map(item => item.id);
+  multiple.value = !selection.length;
+}
+/** 排序触发事件 */
+function handleSortChange(column, prop, order) {
+  queryParams.value.orderByColumn = column.prop;
+  queryParams.value.isAsc = column.order;
+  getList();
+}
+
+/** 删除按钮操作 */
+function handleDelete(row) {
+  const operIds = row.id || ids.value;
+  proxy.$modal.confirm('是否确认删除日志编号为"' + operIds + '"的数据项?').then(function () {
+    return delTag(operIds);
+  }).then(() => {
+    getList();
+    ElMessage.success("删除成功");
+  }).catch(() => {});
+}
+/** 下载按钮操作 */
+async function handleDownLoad(row) {
 
 
-// /**
-//  * 获取搜索文件结果列表
-//  * @param {string} fileName 文件名称
-//  */
-// function getSearchFileList(fileName) {
-//   this.loading = true
-//   searchFile({
-//     currentPage: this.pageData.currentPage,
-//     pageCount: this.pageData.pageCount,
-//     fileName: fileName
-//   }).then((res) => {
-//     this.loading = false
-//     if (res.success) {
-//       this.fileList = res.dataList.map((item) => {
-//         return {
-//           ...item,
-//           highlightFields: item.highLight.fileName[0]
-//         }
-//       })
-//       this.pageData.total = res.data.totalHits
-//     } else {
-//       this.$message.error(res.message)
-//     }
-//   })
-// }
-//
-// /**
-//  * 表格数据获取相关事件 | 获取文件列表数据
-//  */
-// function getTableDataByType() {
-//   this.loading = true
-//   // 分类型
-//   if (Number(this.fileType)) {
-//     switch (Number(this.fileType)) {
-//       case 6: {
-//         this.showFileRecovery() //  回收站
-//         break
-//       }
-//       case 8: {
-//         this.showMyShareFile() //  我的分享
-//         break
-//       }
-//       default: {
-//         this.showFileList()
-//         break
-//       }
-//     }
-//   } else {
-//     // 全部文件
-//     this.showFileList()
-//   }
-//   this.$store.dispatch('showStorage')
-// }
+}
 
+/** 分享按钮操作 */
+async function handleShare(row) {
+
+}
+
+// getList();
 </script>
 
-<style lang="stylus" scoped>
+<style>
 
-.file-list-wrapper {
-  >>> .el-header {
-    padding: 0;
-  }
-
-  .middle-wrapper {
-    margin-bottom: 8px;
-  }
-
-  .pagination-wrapper {
-    position: relative;
-    border-top: 1px solid $BorderBase;
-    height: 44px;
-    line-height: 44px;
-    text-align: center;
-
-    .current-page-count {
-      position: absolute;
-      left: 16px;
-      height: 32px;
-      line-height: 32px;
-      font-size: 13px;
-      color: $RegularText;
-    }
-  }
+.mb10 {
+  margin-bottom: 10px;
 }
+
+.app-container {
+  margin-top: 12px;
+}
+
 </style>
