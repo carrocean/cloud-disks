@@ -34,7 +34,7 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.4</version> <!-- 确保使用的是一个合适的版本 -->
+            <version>1.4</version>
         </dependency>
 
     </dependencies>

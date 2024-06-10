@@ -152,7 +152,7 @@ public class FileController {
                                    @RequestParam(value = "mkdir") String mkdir,
                                    @RequestParam(value = "parentid") long parentid) {
         JSONObject result = new JSONObject();
-        UserEntity user = (UserEntity) httpSession.getAttribute(Constants.currentUserSessionKey);
+        UserEntity user = (UserEntity) httpSession.getAttribute( Constants.currentUserSessionKey);
         FileEntity file = new FileEntity();
         file.setDir(true);
         file.setFile(false);
