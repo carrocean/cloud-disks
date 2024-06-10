@@ -1,16 +1,15 @@
 <template>
   <el-header class="the-header">
-    <div class="logo">
-      <!-- 应用图标和名字 -->
-      <img src="../assets/云.svg" alt="App Logo" />
-      <span class="app-name">QST网盘</span>
-    </div>
+      <div class="logo">
+        <!-- 应用图标和名字 -->
+        <img src="../assets/云.svg" alt="App Logo" />
+        <span class="app-name">QST网盘</span>
+      </div>
 
-    <div class="user-info">
       <!-- 用户名和退出登录按钮 -->
       <el-dropdown trigger="click" @command="handleCommand">
-        <span class="el-dropdown-link user-name">
-          {{ userName }} <i class="el-icon-arrow-down el-icon--right"></i>
+        <span class="user-name">
+          <el-icon><User></User></el-icon> {{ userName }}
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -18,7 +17,6 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-    </div>
   </el-header>
 </template>
 
@@ -29,12 +27,9 @@ import {checkUserLoginInfo} from "@/api/user.js";
 import common from "@/libs/globalFunction/common.js";
 import config from "@/config/index.js";
 import router from "@/router/index.js";
+import {User} from "@element-plus/icons-vue";
 
 let userName = ref('张三')
-
-onMounted(() => {
-  getUserName()
-});
 
 function getUserName() {
   checkUserLoginInfo().then(res => {
@@ -51,6 +46,7 @@ function handleCommand(command) {
   }
 }
 
+getUserName()
 </script>
 
 <style scoped>

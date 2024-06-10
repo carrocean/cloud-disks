@@ -112,4 +112,6 @@ public interface IFileService {
     void upload(UserEntity user, MultipartFile file);
 
     FileEntity getById(String fileId);
+
+    void deleteById(String userId, long fileId);
 }

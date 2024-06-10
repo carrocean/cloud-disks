@@ -31,9 +31,6 @@ instance.interceptors.response.use(
         return res.data;
     },
     (error) => {
-        if(error.config.showLoading&&loading) {
-            loading.close();
-        }
         return Promise.reject({showError:true,msg:"网络异常"});
     }
 );

@@ -5,11 +5,9 @@ import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
 import com.example.enums.Constants;
 import com.example.hadoop.dao.FileDao;
-import com.example.hadoop.dao.basedao.HdfsDao;
 import com.example.mapper.FileMapper;
 import com.example.service.IFileService;
 import com.example.util.DateUtil;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -19,14 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service("fileService")
 public class FileServiceImpl implements IFileService {
@@ -39,25 +33,12 @@ public class FileServiceImpl implements IFileService {
     /**
      * 获得文件列表，查看文件或目录列表
      * @param user
-     * @param parentid
+     * @param parentId
      * @return
      */
     @Override
-    public List<FileEntity> getFileList(UserEntity user, long parentid) {
-        List<FileEntity> list = new ArrayList<FileEntity>();
-        Filter filter = new PrefixFilter(Bytes.toBytes(user.getUserId() + "_" + parentid + "_"));
-        ResultScanner resultScanner = fileDao.getResultScannerByUserFile(filter);
-        Iterator<Result> iter = resultScanner.iterator();
-        while(iter.hasNext()) {
-            Result result = iter.next();
-            if(!result.isEmpty()) {
-                long id = Bytes.toLong(result.getValue(Bytes.toBytes(Constants.FAMILY_USERFILE_FILE), Bytes.toBytes(Constants.COLUMN_USERFILE_FILEID)));
-                if (id > 0) {
-                    list.add(fileDao.getById(id));
-                }
-            }
-        }
-        return list;
+    public List<FileEntity> getFileList(UserEntity user, long parentId) {
+        return fileMapper.listFileByUserId(user.getUserId());
     }
 
     /**
@@ -300,20 +281,41 @@ public class FileServiceImpl implements IFileService {
         fileDao.copyOrMoveFile(user, sourceFile, destFile, flag);
     }
 
+    /**
+     * 上传文件
+     * @param user
+     * @param file
+     */
     @Override
     public void upload(UserEntity user, MultipartFile file) {
         try {
             InputStream inputStream = file.getInputStream();
 
             FileEntity fileEntity = new FileEntity();
+            fileEntity.setUserId(user.getUserId());
             fileEntity.setOriginalName(file.getOriginalFilename());
-            fileEntity.setName(file.getOriginalFilename());
             fileEntity.setFile(true);
             fileEntity.setDir(false);
             fileEntity.setSize(String.valueOf(file.getSize())); // 设置文件大小
-            fileEntity.setPath(fileEntity.getName()); // 设置文件在HDFS中的路径
-            fileEntity.setDate("2024-06-08 12:00:00"); // 设置日期，这里假设一个固定值
+            fileEntity.setPath(file.getOriginalFilename()); // 设置文件在HDFS中的路径
 
+            // 获取当前时间并赋值
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentDate = dateFormat.format(new Date());
+            fileEntity.setDate(currentDate);
+
+            // 获取文件名后缀，如果没有则设为其他文件类型
+            String fileExtension = "";
+            String[] parts = Objects.requireNonNull(file.getOriginalFilename()).split("\\.");
+            if (parts.length > 1) {
+                fileExtension = parts[parts.length - 1];
+            } else {
+                fileExtension = "other"; // 假设没有后缀的文件类型为"other"
+            }
+            fileEntity.setName(parts[0]);
+            fileEntity.setType(fileExtension);
+
+            fileMapper.addFile(fileEntity);
             // 调用上传文件到HDFS的方法
             fileDao.upload(inputStream, fileEntity, user);
 
@@ -328,6 +330,11 @@ public class FileServiceImpl implements IFileService {
     @Override
     public FileEntity getById(String fileId) {
         return fileMapper.getById(fileId);
+    }
+
+    @Override
+    public void deleteById(String userId, long fileId) {
+        fileMapper.deleteById(userId, fileId);
     }
 
 }

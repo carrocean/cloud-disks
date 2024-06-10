@@ -95,11 +95,27 @@ public class FileController {
      *
      * @return
      */
-    @RequestMapping("/fileList")
-    public void fileList() {
-
-        return ;
+    @GetMapping("/fileList")
+    public AjaxResult fileList(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "parentId",required = false, defaultValue = "0") long parentId) {
+        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
+        List<FileEntity> files = fileService.getFileList(user, parentId);
+        return AjaxResult.success(files);
     }
+
+    /**
+     * 删除文件
+     * @param request
+     * @param fileId
+     * @return
+     */
+    @PutMapping("/deleteFile")
+    public AjaxResult deleteFile(HttpServletRequest request, @RequestParam(value = "id") long fileId) {
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        fileService.deleteById(userId, fileId);
+        return AjaxResult.success();
+    }
+
+    
 
     /**
      * 显示上传文件页面弹窗
@@ -178,6 +194,8 @@ public class FileController {
         ResponseUtil.write(response, result);
         return null;
     }
+
+
 
     /**
      * 删除文件或者文件夹

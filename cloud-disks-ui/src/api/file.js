@@ -7,7 +7,6 @@ var prefix = '/api/cloud/disks/file/';
 var managerUrl = {
     fileList: prefix + "fileList",
     showUpload: prefix + 'showUpload',
-    uploadFile: prefix + 'uploadFile',
     makeFolder: prefix + "makeFolder",
     deleteFileOrFolder: prefix + "deleteFileOrFolder",
     renameFileOrFolder: prefix + "renameFileOrFolder",
@@ -16,9 +15,11 @@ var managerUrl = {
     copyOrMoveFile: prefix + "copyOrMoveFile",
     downloadFile: prefix + "downloadFile",
     viewFile: prefix + "viewFile",
-    upload: prefix + 'upload'
+    upload: prefix + 'upload',
+    deleteFile: prefix + 'deleteFile'
 }
 
+// 上传文件
 export function upload(data) {
     return request({
         headers: {
@@ -32,16 +33,20 @@ export function upload(data) {
 
 // 列出文件列表
 export function fileList(data) {
-    const { dir = '/', originalDir = '/', parentid = 0 } = data;
     return request({
         url: managerUrl.fileList,
         method: 'get',
-        params: {
-            dir,
-            originalDir,
-            parentid
-        }
+        params: data
     });
+}
+
+// 删除文件
+export function deleteFile(data) {
+    return request({
+        url: managerUrl.deleteFile,
+        method: 'put',
+        params: data
+    })
 }
 
 // 显示上传文件页面弹窗
@@ -58,19 +63,6 @@ export function showUpload(data) {
     });
 }
 
-// 上传文件
-// export function uploadFile(data) {
-//     const { dir, originalDir, parentid } = data;
-//     return request({
-//         url: managerUrl.uploadFile,
-//         method: 'post',
-//         data: {
-//             dir,
-//             originalDir,
-//             parentid
-//         }
-//     });
-// }
 
 // 创建文件夹
 export function makeFolder(data) {

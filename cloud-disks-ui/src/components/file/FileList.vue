@@ -24,6 +24,7 @@
             :limit="1"
             :headers="headers"
             :show-file-list="false"
+            :on-success="successUpload"
         >
           <template #trigger>
             <el-button type="primary" plain>
@@ -58,19 +59,19 @@
       </el-table-column>
       <el-table-column label="大小" align="left" prop="size">
         <template #default="scope">
-          <span>{{ scope.row.size }}</span>
+          <span>{{ scope.row.size }} K</span>
         </template>
       </el-table-column>
-      <el-table-column label="添加日期" align="center" prop="operTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+      <el-table-column label="添加日期" align="center" prop="date" sortable="custom" :sort-orders="['descending', 'ascending']">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.addTime) }}</span>
+          <span>{{ parseTime(scope.row.date) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
               type="text"
-              icon="Upload"
+              icon="Download"
               @click="handleDownLoad(scope.row)"
           >下载</el-button>
           <el-button
@@ -91,14 +92,14 @@
 </template>
 
 <script setup>
-import {fileList} from "@/api/file.js";
+import {deleteFile, fileList} from "@/api/file.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {useRouter} from "vue-router";
 import common from "@/libs/globalFunction/common.js";
 import globalConfig from "@/config/index.js";
 import {ElMessage} from "element-plus";
 import {Upload} from "@element-plus/icons-vue";
-import {parseTime} from "element-plus/es/components/time-select/src/utils";
+import {parseTime} from '@/utils/Utils.js'
 
 
 const { proxy } = getCurrentInstance();
@@ -133,12 +134,18 @@ const headers = ref({
 })
 const uploadUrl = ref('http://localhost:30001/api/cloud/disks/file/upload')
 
+// 文件上传成功钩子
+function successUpload() {
+  ElMessage.success("上传成功")
+  getList();
+}
+
 
 /** 查询文件 */
 function getList() {
   loading.value = true;
   fileList(queryParams.value, dateRange.value).then(response => {
-    operlogList.value = response.rows;
+    operlogList.value = response.data;
     total.value = response.total;
     loading.value = false;
   });
@@ -169,13 +176,12 @@ function handleSortChange(column, prop, order) {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const operIds = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除日志编号为"' + operIds + '"的数据项?').then(function () {
-    return delTag(operIds);
-  }).then(() => {
+  loading.value = true;
+  deleteFile(row).then(response => {
+    ElMessage.success("删除成功")
     getList();
-    ElMessage.success("删除成功");
-  }).catch(() => {});
+    loading.value = false;
+  });
 }
 /** 下载按钮操作 */
 async function handleDownLoad(row) {
@@ -188,7 +194,7 @@ async function handleShare(row) {
 
 }
 
-// getList();
+getList();
 </script>
 
 <style>
