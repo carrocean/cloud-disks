@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -67,24 +64,22 @@ public class HdfsDao {
      *
      * @param userEntity
      * @param fileEntity
-     * @param local
      */
-    public boolean download(UserEntity userEntity, FileEntity fileEntity, String local) {
+    public byte[] download(UserEntity userEntity, FileEntity fileEntity) {
         try {
             String formatPath = formatPathMethod(userEntity, fileEntity);
             if (HdfsConn.getFileSystem().exists(new Path(formatPath))) {
                 FSDataInputStream inputStream = HdfsConn.getFileSystem().open(new Path(formatPath));
-                OutputStream outputStream = Files.newOutputStream(Paths.get(local));
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 IOUtils.copyBytes(inputStream, outputStream, 4096, true);
-                log.info(local);
-                return true;
+                return outputStream.toByteArray();
             }
         } catch (IllegalArgumentException e) {
             log.error(String.valueOf(e));
         } catch (IOException e) {
             log.error(String.valueOf(e));
         }
-        return false;
+        return null;
     }
 
     /**

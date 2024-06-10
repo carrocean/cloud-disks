@@ -219,12 +219,11 @@ public class FileServiceImpl implements IFileService {
      * 下载文件
      * @param user
      * @param file
-     * @param local
      * @return
      */
     @Override
-    public boolean downloadFile(UserEntity user, FileEntity file, String local) {
-        return fileDao.downloadFile(user, file, local);
+    public byte[] downloadFile(UserEntity user, FileEntity file) {
+        return fileDao.downloadFile(user, file);
     }
 
     /**

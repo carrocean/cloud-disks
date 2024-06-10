@@ -40,8 +40,8 @@ public class FileDao {
      * @param file
      * @param local
      */
-    public boolean downloadFile(UserEntity user, FileEntity file, String local) {
-        return hdfsDao.download(user, file, local);
+    public byte[] downloadFile(UserEntity user, FileEntity file) {
+        return hdfsDao.download(user, file);
     }
 
     /**

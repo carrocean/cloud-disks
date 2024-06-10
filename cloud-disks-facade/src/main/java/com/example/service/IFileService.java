@@ -83,10 +83,9 @@ public interface IFileService {
      *
      * @param user
      * @param file
-     * @param local
      * @return
      */
-    public boolean downloadFile(UserEntity user, FileEntity file, String local);
+    public byte[] downloadFile(UserEntity user, FileEntity file);
 
 
     /**

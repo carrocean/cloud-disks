@@ -11,6 +11,9 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -65,29 +68,19 @@ public class FileController {
      * @return
      */
     @RequestMapping("/downloadFile")
-    public AjaxResult downloadFile(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "fileId") String fileId) {
+    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "fileId") String fileId) {
         UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
         FileEntity file = fileService.getById(fileId);
-        try {
-            String local = request.getSession().getServletContext().getRealPath("/downloadFile/");
-            String myFile = local + file.getOriginalName();
-            if (!new java.io.File(myFile).exists()) {
-                java.io.File realPath = new java.io.File(local);
-                if (!realPath.exists()) {
-                    realPath.mkdirs();
-                }
-                if (fileService.downloadFile(user, file, myFile)) {
-                    return AjaxResult.success();
-                }else {
-                    return AjaxResult.error("文件不存在");
-                }
-            } else {
-                AjaxResult.error("文件已存在");
-            }
-        } catch (Exception e) {
-            log.error(String.valueOf(e));
-        }
-        return AjaxResult.success();
+        byte[] fileBytes = fileService.downloadFile(user,file);
+        // 设置响应头
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "filename.ext"); // 指定下载的文件名
+
+        // 返回字节数组
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(fileBytes);
     }
 
     /**
@@ -365,94 +358,4 @@ public class FileController {
     }
 
 
-    /**
-     * 选择弹窗下载文件
-     * 未使用
-     *
-     * @param response
-     * @param httpSession
-     * @param request
-     * @param name
-     * @param originalName
-     * @param path
-     * @return
-     */
-    public String downloadFileSelect(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request,
-                                     @RequestParam(value = "name") String name,
-                                     @RequestParam(value = "originalName") String originalName,
-                                     @RequestParam(value = "path") String path) {
-        JSONObject result = new JSONObject();
-        UserEntity user = new UserEntity();
-        user.setUserName(name);
-        FileEntity file = new FileEntity();
-        file.setOriginalName(originalName);
-        file.setPath(path);
-        JFileChooser jFileChooser = new JFileChooser();
-        java.io.File myfile;
-        try {
-            jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int returnVal = jFileChooser.showOpenDialog(null);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                myfile = jFileChooser.getSelectedFile();
-                if ((myfile != null) && (fileService.downloadFile(user, file, myfile.getAbsolutePath() + "\\" + file.getOriginalName()))) {
-                    result.put("errres", true);
-                    result.put("errmsg", "下载成功！");
-                } else {
-                    result.put("errres", false);
-                    result.put("errmsg", "文件不存在！");
-                }
-            }
-        } catch (Exception e) {
-            result.put("errres", false);
-            result.put("errmsg", "下载失败！");
-            e.printStackTrace();
-        }
-        ResponseUtil.write(response, result);
-        return null;
-    }
-
-    /**
-     * 在线查看文件,普通文件-->pdf文件-->swf文件
-     *
-     * @param httpSession
-     * @param request
-     * @param name
-     * @param originalName
-     * @param path
-     * @return
-     */
-    @RequestMapping("/viewFile")
-    public ModelAndView viewFile(HttpSession httpSession, HttpServletRequest request,
-                                 @RequestParam(value = "name") String name,
-                                 @RequestParam(value = "originalName") String originalName,
-                                 @RequestParam(value = "path") String path) throws Exception {
-        String local = request.getSession().getServletContext().getRealPath("/downloadFile/");
-        java.io.File realPath = new java.io.File(local);
-        if (!realPath.exists()) {
-            realPath.mkdirs();
-        }
-        String generalFile = local + originalName;
-        String swfFile = FilesUtil.getFilePrefix(generalFile) + ".swf";
-        java.io.File outSwfFile = new java.io.File(swfFile);
-        if (!outSwfFile.exists()) {
-            String pdfFile = FilesUtil.getFilePrefix(generalFile) + ".pdf";
-            java.io.File outPdfFile = new java.io.File(pdfFile);
-            if (!outPdfFile.exists()) {
-                java.io.File outGeneralFile = new java.io.File(generalFile);
-                if (!outGeneralFile.exists()) {
-                    UserEntity user = new UserEntity();
-                    user.setUserName(name);
-                    FileEntity file = new FileEntity();
-                    file.setOriginalName(originalName);
-                    file.setPath(path);
-                    fileService.downloadFile(user, file, generalFile);
-                }
-                OfficeToSwf.convertToPdf(generalFile, pdfFile);
-            }
-            OfficeToSwf.pdfConvertSwf(pdfFile, swfFile);
-        }
-        ModelAndView modelAndView = new ModelAndView("/cloud/view");
-        modelAndView.addObject("local", "downloadFile/" + FilesUtil.getFilePrefix(originalName) + ".swf");
-        return modelAndView;
-    }
 }
