@@ -151,15 +151,10 @@ export function copyOrMoveFile(data) {
 
 // 下载文件
 export function downloadFile(data) {
-    const { name, originalName, path } = data;
     return request({
         url: managerUrl.downloadFile,
         method: 'get',
-        params: {
-            name,
-            originalName,
-            path
-        }
+        params: data
     });
 }
 

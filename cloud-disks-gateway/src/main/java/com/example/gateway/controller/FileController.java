@@ -67,15 +67,14 @@ public class FileController {
      * @param fileId
      * @return
      */
-    @RequestMapping("/downloadFile")
-    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "fileId") String fileId) {
+    @GetMapping("/downloadFile")
+    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "id") String fileId) {
         UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
         FileEntity file = fileService.getById(fileId);
         byte[] fileBytes = fileService.downloadFile(user,file);
         // 设置响应头
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "filename.ext"); // 指定下载的文件名
 
         // 返回字节数组
         return ResponseEntity.ok()

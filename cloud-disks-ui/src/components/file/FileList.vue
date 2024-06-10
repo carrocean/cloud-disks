@@ -28,7 +28,9 @@
         >
           <template #trigger>
             <el-button type="primary" plain>
-              <el-icon><Upload></Upload></el-icon>
+              <el-icon>
+                <Upload></Upload>
+              </el-icon>
               <span>上传</span>
             </el-button>
           </template>
@@ -41,12 +43,13 @@
             icon="Delete"
             :disabled="multiple"
             @click="handleDelete"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
     </el-row>
 
     <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
-      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="文件名称" align="left" prop="name">
         <template #default="scope">
           <span>{{ scope.row.name }}</span>
@@ -73,17 +76,20 @@
               type="text"
               icon="Download"
               @click="handleDownLoad(scope.row)"
-          >下载</el-button>
+          >下载
+          </el-button>
           <el-button
               type="text"
               icon="Share"
               @click="handleShare(scope.row)"
-          >分享</el-button>
+          >分享
+          </el-button>
           <el-button
               type="text"
               icon="Delete"
               @click="handleDelete(scope.row)"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -92,7 +98,7 @@
 </template>
 
 <script setup>
-import {deleteFile, fileList} from "@/api/file.js";
+import {deleteFile, downloadFile, fileList} from "@/api/file.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {useRouter} from "vue-router";
 import common from "@/libs/globalFunction/common.js";
@@ -102,7 +108,7 @@ import {Upload} from "@element-plus/icons-vue";
 import {parseTime} from '@/utils/Utils.js'
 
 
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 
 const router = useRouter();
 const operlogList = ref([]);
@@ -113,7 +119,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
-const defaultSort = ref({ prop: "operTime", order: "descending" });
+const defaultSort = ref({prop: "operTime", order: "descending"});
 
 const data = reactive({
   queryParams: {
@@ -126,7 +132,7 @@ const data = reactive({
   }
 });
 
-const { queryParams} = toRefs(data);
+const {queryParams} = toRefs(data);
 
 const token = common.getCookies(globalConfig.tokenKeyName)
 const headers = ref({
@@ -150,11 +156,13 @@ function getList() {
     loading.value = false;
   });
 }
+
 /** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.pageNum = 1;
   getList();
 }
+
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
@@ -162,11 +170,13 @@ function resetQuery() {
   proxy.$refs["operlogRef"].sort(defaultSort.value.prop, defaultSort.value.order);
   handleQuery();
 }
+
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
   multiple.value = !selection.length;
 }
+
 /** 排序触发事件 */
 function handleSortChange(column, prop, order) {
   queryParams.value.orderByColumn = column.prop;
@@ -183,10 +193,25 @@ function handleDelete(row) {
     loading.value = false;
   });
 }
+
 /** 下载按钮操作 */
 async function handleDownLoad(row) {
-
-
+  downloadFile(row).then(response => {
+    if (response) {
+      let fileName = row.originalName
+      let url = window.URL.createObjectURL(new Blob([response.data]));
+      let link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      ElMessage.success('下载成功')
+    } else {
+      console.error('下载失败，响应状态码：', response.status);
+      ElMessage.error('下载失败')
+    }
+  });
 }
 
 /** 分享按钮操作 */
