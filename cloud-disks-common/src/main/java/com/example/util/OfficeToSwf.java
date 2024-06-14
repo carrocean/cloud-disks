@@ -75,8 +75,4 @@ public class OfficeToSwf {
         }
     }
 
-    public static void main(String[] args) {
-        convertToPdf("F:\\hadoop\\reverse.txt", "F:\\hadoop\\reverse.pdf");
-        pdfConvertSwf("F:\\hadoop\\reverse.pdf", "F:\\hadoop\\reverse.swf");
-    }
 }

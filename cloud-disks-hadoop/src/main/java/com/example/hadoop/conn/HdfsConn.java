@@ -34,11 +34,4 @@ public class HdfsConn {
         return SingletonHolder.INSTANCE.configuration;
     }
 
-    public static void main(String[] args) throws Exception{
-        String dir = "/cxx/aa";
-        FileSystem fs = getFileSystem();
-        if (!fs.exists(new Path(dir))) {
-            fs.mkdirs(new Path(dir));
-        }
-    }
 }

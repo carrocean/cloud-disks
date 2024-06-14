@@ -11,7 +11,7 @@ const responseTypeJson= "json"
 
 let loading=null;
 const instance =axios.create({
-    baseURL:'http://localhost:30001',
+    baseURL:'http://carrocean.top:30001',
     timeout:10*1000,
 })
 //请求拦截

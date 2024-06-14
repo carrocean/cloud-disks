@@ -58,9 +58,4 @@ public class HbaseConn {
         return tables;
     }
 
-    public static void main(String[] args) {
-        HbaseConn hbaseConn = new HbaseConn();
-        hbaseConn.getAllTables();
-
-    }
 }

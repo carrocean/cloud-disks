@@ -15,8 +15,5 @@ public class DateUtil {
             return sdf.format(date);
         }
 
-        public static void main(String[] args) {
-            System.out.println(DateUtil.DateToString("yyyy-MM-dd HH:mm:ss", new Date()));
-        }
     }
 

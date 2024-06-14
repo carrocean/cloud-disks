@@ -18,7 +18,7 @@ export default defineConfig({
     hmr:true,
     proxy:{
       "/api":{
-        target:"http://localhost:30001",
+        target:"http://carrocean.top:30001",
         changeOrigin:true,
         pathRewrite:{
           "^api":"/api"

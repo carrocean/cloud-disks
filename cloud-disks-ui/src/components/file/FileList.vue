@@ -50,6 +50,13 @@
 
     <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
       <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column width="60">
+        <template #default="scope">
+          <img
+              :src="getAssetsFile(scope.row.type)"
+              style="width: 30px; max-height: 30px;"/>
+        </template>
+      </el-table-column>
       <el-table-column label="文件名称" align="left" prop="name">
         <template #default="scope">
           <span>{{ scope.row.name }}</span>
@@ -62,7 +69,7 @@
       </el-table-column>
       <el-table-column label="大小" align="left" prop="size">
         <template #default="scope">
-          <span>{{ scope.row.size }} K</span>
+          <span>{{ scope.row.size }} B</span>
         </template>
       </el-table-column>
       <el-table-column label="添加日期" align="center" prop="date" sortable="custom" :sort-orders="['descending', 'ascending']">
@@ -138,12 +145,16 @@ const token = common.getCookies(globalConfig.tokenKeyName)
 const headers = ref({
   'token': token
 })
-const uploadUrl = ref('http://localhost:30001/api/cloud/disks/file/upload')
+const uploadUrl = ref('http://carrocean.top:30001/api/cloud/disks/file/upload')
 
 // 文件上传成功钩子
 function successUpload() {
   ElMessage.success("上传成功")
   getList();
+}
+
+function getAssetsFile(type) {
+  return new URL(`@/assets/images/file/file_txt.png`, import.meta.url).href
 }
 
 

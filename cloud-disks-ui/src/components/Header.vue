@@ -2,7 +2,7 @@
   <el-header class="the-header">
       <div class="logo">
         <!-- 应用图标和名字 -->
-        <img src="../assets/云.svg" alt="App Logo" />
+        <img src="@/assets/云.svg" alt="App Logo" />
         <span class="app-name">QST网盘</span>
       </div>
 
