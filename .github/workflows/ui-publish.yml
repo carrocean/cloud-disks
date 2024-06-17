@@ -56,8 +56,9 @@ jobs:
       - name: Deploy to Aliyun ECS
         run: |
           sshpass -p ${{ secrets.ALIYUN_ECS_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{secrets.ALIYUN_ECS_USER}}@${{secrets.ALIYUN_ECS_HOST}} << EOF
-            docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
             docker stop ${{env.PROJECT_NAME}} || true
             docker rm ${{env.PROJECT_NAME}} || true
+            docker rmi ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
+            docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
             docker run --name ${{env.PROJECT_NAME}} -d -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }} ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
           EOF
