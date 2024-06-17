@@ -50,10 +50,10 @@ jobs:
 
       - name: Deploy to Aliyun ECS
         run: |
-          sshpass -p ${{secrets.ALIYUN_ECS_PASSWORD}} -o StrictHostKeyChecking=no ${{secrets.ALIYUN_ECS_USER}}@${{secrets.ALIYUN_ECS_HOST}} << EOF
+          echo ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} | ssh -o StrictHostKeyChecking=no ${{secrets.ALIYUN_ECS_USER}}@${{secrets.ALIYUN_ECS_HOST}} << EOF
             echo ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} | docker login --username ${{ secrets.ALIYUN_REGISTRY_USER }} --password-stdin ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
             docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
-            docker stop ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} || true
-            docker rm ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} || true
+            docker stop ${{env.PROJECT_NAME}} || true
+            docker rm ${{env.PROJECT_NAME}} || true
             docker run --name ${{env.PROJECT_NAME}} -d -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }} ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
           EOF
