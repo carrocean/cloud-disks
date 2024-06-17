@@ -38,13 +38,16 @@ jobs:
         run: |
           mvn clean package -DskipTests
 
+      - name: Build Docker images
+        run: |
+          docker build -t ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} .
+
       - name: Login to Aliyun Container Registry
         run: |
           echo ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} | docker login --username=${{ secrets.ALIYUN_REGISTRY_USER }} --password-stdin ${{ env.ALIYUN_CR_REGISTORY }}
 
       - name: Tag and push SpringBoot image to Aliyun
         run: |
-          docker build -t ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} .
           docker tag ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
           docker push ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
 
