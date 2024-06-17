@@ -41,6 +41,7 @@ jobs:
 
       - name: Build Docker images
         run: |
+          cd cloud-disks-ui
           docker build -t ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} .
 
       - name: Login to Aliyun Container Registry
