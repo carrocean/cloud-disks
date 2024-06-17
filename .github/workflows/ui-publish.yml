@@ -1,82 +1,73 @@
-name: Build and Publish
+name: Build and Deploy UI
 
 on:
   push:
     branches:
       - main
+  # 你可以根据需要添加其他触发条件
 
 jobs:
-  build-and-publish:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      # 版本管理
-      PROJECT_NAME: 'alinesno-infra-data-mdm-admin'
-      PRO_VERSION: '1.0.0-SNAPSHOT'
-      CURRENT_PROFIRE: 'dev'
-      BUILD_NUMBER: ${{ github.run_number }}
-
-      # 容器镜像
-      ALIYUN_CR_REGISTORY: 'registry.cn-shenzhen.aliyuncs.com'
-      ALIYUN_CR_NAMESPACE: 'alinesno-infra-platform'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout source code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Set up Node.js for Vue
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.13.1
+          node-version: '20.12.2'
 
-      - name: Install dependencies
+      - name: Install Vue dependencies and build
         run: |
-          cd ${{ env.PROJECT_NAME }}
+          cd frontend # 前端Vue项目的目录，根据实际情况调整
           npm install
-          npm run build:prod
-
-      - name: Login to Aliyun Container Registry (ACR)
-        uses: aliyun/acr-login@v1
-        with:
-          login-server: ${{ env.ALIYUN_CR_REGISTORY }}
-          region-id: cn-shenzhen  # 3
-          username: "${{ secrets.ALIYUN_CR_USERNAME }}"
-          password: "${{ secrets.ALIYUN_CR_PASSWORD }}"
-
-      - name: Build Docker image
-        run: |
-          cd ${{ env.PROJECT_NAME }}
-          cp -r dist ./docker/
-          docker build -t ${{ env.ALIYUN_CR_REGISTORY }}/${{ env.ALIYUN_CR_NAMESPACE }}/${{ env.PROJECT_NAME }}:${{ env.PRO_VERSION }}.${{ env.BUILD_NUMBER }} ./docker
-          docker push ${{ env.ALIYUN_CR_REGISTORY }}/${{ env.ALIYUN_CR_NAMESPACE }}/${{ env.PROJECT_NAME }}:${{ env.PRO_VERSION }}.${{ env.BUILD_NUMBER }}
-
-      - name: local remote scp
-        uses: cross-the-world/scp-pipeline@master
-        with:
-          host: ${{ secrets.SERVER_BETA_HOST_02 }}
-          port: ${{ secrets.SERVER_BETA_PORT_02 }}
-          user: ${{ secrets.SERVER_BETA_USER_02 }}
-          pass: ${{ secrets.SERVER_BETA_KEY_02 }}
-          local: "./deploy/*"
-          remote: /home/github-action/${{ env.PROJECT_NAME }}
-
-      - name: SSH Pipelines
-        uses: cross-the-world/ssh-pipeline@master
+          npm run build
         env:
-          WELCOME: "ssh pipeline"
+          CI: true
+
+      - name: Set up Java for SpringBoot
+        uses: actions/setup-java@v3
         with:
-          host: ${{ secrets.SERVER_BETA_HOST_02 }}
-          port: ${{ secrets.SERVER_BETA_PORT_02 }}
-          user: ${{ secrets.SERVER_BETA_USER_02 }}
-          pass: ${{ secrets.SERVER_BETA_KEY_02 }}
-          connect_timeout: 30s
-          script: |
-            export PROJECT_NAME=${{ env.PROJECT_NAME }}
-            export VERSION=${{ env.PRO_VERSION }}.${{ env.BUILD_NUMBER }}
+          java-version: '11' # 根据项目需求设置 Java 版本
 
-            export ALIYUN_CR_REGISTORY=${{ env.ALIYUN_CR_REGISTORY }}
-            export ALIYUN_CR_NAMESPACE=${{ env.ALIYUN_CR_NAMESPACE }}
-            export NAMESPACE=${{ secrets.K8S_NAMESPACE }}
+      - name: Build SpringBoot application
+        run: |
+          cd backend # 后端SpringBoot项目的目录，根据实际情况调整
+          mvn clean package -DskipTests
 
-            export INFRA_DEV_DOMAIN=${{ secrets.INFRA_BETA_DATA_DOMAIN }}
+      - name: Build Docker images
+        run: |
+          docker build -t vue-springboot-app -f Dockerfile . # 确保 Dockerfile 在仓库根目录
 
-            envsubst < /home/github-action/${{ env.PROJECT_NAME }}/kubernetes-admin-${{ env.CURRENT_PROFIRE }}.yml | kubectl apply -f -
+      - name: Login to Aliyun Container Registry
+        run: |
+          echo ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} | docker login --username ${{ secrets.ALIYUN_REGISTRY_USER }} --password-stdin ${{ secrets.ALIYUN_REGISTRY }}
+
+      - name: Tag and push Vue image to Aliyun
+        run: |
+          docker tag vue-springboot-app:latest ${{ secrets.ALIYUN_REGISTRY }}/your-vue-repo:tag
+          docker push ${{ secrets.ALIYUN_REGISTRY }}/your-vue-repo:tag
+
+      - name: Tag and push SpringBoot image to Aliyun
+        run: |
+          # 假设 SpringBoot 应用已经构建为一个单独的 Docker 镜像
+          docker tag springboot-app:latest ${{ secrets.ALIYUN_REGISTRY }}/your-springboot-repo:tag
+          docker push ${{ secrets.ALIYUN_REGISTRY }}/your-springboot-repo:tag
+
+      - name: Deploy to Aliyun ECS
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${DEPLOY_KEY} your-deploy-user@your-aliyun-ecs-ip << EOF
+            # 拉取镜像和部署的命令
+            docker pull ${{ secrets.ALIYUN_REGISTRY }}/your-vue-repo:tag
+            docker pull ${{ secrets.ALIYUN_REGISTRY }}/your-springboot-repo:tag
+            docker stop your-vue-container || true
+            docker rm your-vue-container || true
+            docker run --name your-vue-container -d -p your-vue-port:80 ${{ secrets.ALIYUN_REGISTRY }}/your-vue-repo:tag
+            docker stop your-springboot-container || true
+            docker rm your-springboot-container || true
+            docker run --name your-springboot-container -d -p your-springboot-port:8080 ${{ secrets.ALIYUN_REGISTRY }}/your-springboot-repo:tag
+          EOF
