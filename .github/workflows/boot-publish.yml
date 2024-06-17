@@ -41,9 +41,9 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
         run: |
-          sed -i 's/localhost/'"$DB_URL_PORT"'/g' ${{ APPLICATION_YML_URL }}
-          sed -i 's/root/'"$DB_USER"'/g' ${{ APPLICATION_YML_URL }}
-          sed -i 's/123456/'"$DB_PASS"'/g' ${{ APPLICATION_YML_URL }}
+          sed -i 's/localhost/'"$DB_URL_PORT"'/g' ${{ env.APPLICATION_YML_URL }}
+          sed -i 's/root/'"$DB_USER"'/g' ${{ env.APPLICATION_YML_URL }}
+          sed -i 's/123456/'"$DB_PASS"'/g' ${{ env.APPLICATION_YML_URL }}
 
       - name: Build SpringBoot application
         run: |
