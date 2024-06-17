@@ -49,10 +49,8 @@ jobs:
           docker push ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
 
       - name: Deploy to Aliyun ECS
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          sshpass -p ${DEPLOY_PASSWORD} -o StrictHostKeyChecking=no ${{secrets.ALIYUN_ECS_USER}}@${{secrets.ALIYUN_ECS_HOST}} << EOF
+          sshpass -p ${{secrets.ALIYUN_ECS_PASSWORD}} -o StrictHostKeyChecking=no ${{secrets.ALIYUN_ECS_USER}}@${{secrets.ALIYUN_ECS_HOST}} << EOF
             echo ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} | docker login --username ${{ secrets.ALIYUN_REGISTRY_USER }} --password-stdin ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
             docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
             docker stop ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} || true
