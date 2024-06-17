@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.FileMapper">
+    <!-- 增加文件 -->
+    <insert id="addFile" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO file (parent_id, original_name, name, is_file, is_dir, size, path, date, type, viewflag, original_path, user_id, has_delete)
+        VALUES (#{parentId}, #{originalName}, #{name}, #{isFile}, #{isDir}, #{size}, #{path}, #{date}, #{type}, #{viewflag}, #{originalPath}, #{userId}, #{hasDelete})
+    </insert>
+    <!-- 删除文件 -->
+    <update id="deleteFile">
+        UPDATE file
+        SET has_delete = 1,delete_date=CURDATE()
+        WHERE user_id = #{userId} AND id = #{id}
+    </update>
+    <!--文件查询-->
+    <select id="getById" resultType="com.example.entity.FileEntity">
+        SELECT * FROM file
+        WHERE user_id=#{userId} AND id=#{id} AND has_delete=0
+    </select>
+    <!--动态查询-->
+    <select id="searchFiles" resultType="com.example.entity.FileEntity">
+        SELECT * FROM file
+        WHERE user_id = #{userId} AND has_delete=0
+        <if test="originalName != null and originalName != ''">
+            AND file.original_name LIKE CONCAT('%', #{originalName}, '%')
+        </if>
+        <if test="type != null and type != ''">
+            AND file.type LIKE CONCAT('%', #{type}, '%')
+        </if>
+        <if test="path != null and path != ''">
+            AND file.path LIKE CONCAT('%', #{path}, '%')
+        </if>
+        <if test="size != null and size != ''">
+            AND file.size = #{size}
+        </if>
+        <if test="date != null and date != ''">
+            AND file.date = #{date}
+        </if>
+        <if test="isFile != null">
+            AND file.is_file = #{isFile}
+        </if>
+        <if test="isDir != null">
+            AND file.is_dir = #{isDir}
+        </if>
+    </select>
+
+    <!-- 回收站功能-->
+
+    <!-- 手动删除 -->
+    <delete id="deleteFileRecycle">
+        DELETE FROM file
+        WHERE user_id = #{userId} AND id = #{id} AND has_delete=1
+    </delete>
+
+    <!-- 自动删除 -->
+    <delete id="deleteFilesRecycleBin">
+        DELETE FROM file
+        WHERE has_delete = 1 AND DATEDIFF(CURDATE(), delete_date) > 7 AND user_id =#{userId}
+    </delete>
+
+    <!-- 查询文件 -->
+    <select id="getRecycleFiles" resultType="com.example.entity.FileEntity">
+        SELECT * FROM file
+        WHERE user_id = #{userId} AND has_delete=1
+    </select>
+    <!-- 恢复文件 -->
+    <update id="restoreFileFromRecycle">
+        UPDATE file
+        SET has_delete = 0, delete_date = NULL
+        WHERE file.user_id =#{userId} AND id = #{id}
+    </update>
+
+</mapper>
