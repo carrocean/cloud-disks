@@ -20,23 +20,11 @@ jobs:
       ALIYUN_CR_REGISTORY: 'registry.cn-shenzhen.aliyuncs.com'
       ALIYUN_CR_NAMESPACE: 'carrocean'
 
+      SERVER_PORT: '30001'
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install yaml library
-        run: pip install pyyaml
-
-      - name: Extract SpringBoot port
-        run: |
-          python -c "import yaml, os; env_file = os.getenv('GITHUB_ENV'); data = yaml.safe_load(open('src/main/resources/application.yml')); with open(env_file, 'a') as f: f.write(f'\nSPRINGBOOT_PORT={data[\"server\"][\"port\"]}\n')"
-        env:
-          GITHUB_ENV: ${{ runner.temp }}/setenv.env
 
       - name: Set up Java for SpringBoot
         uses: actions/setup-java@v3
@@ -66,5 +54,5 @@ jobs:
             docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
             docker stop ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} || true
             docker rm ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} || true
-            docker run --name ${{env.PROJECT_NAME}} -d -p ${{ env.SPRINGBOOT_PORT }}:${{ env.SPRINGBOOT_PORT }} ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
+            docker run --name ${{env.PROJECT_NAME}} -d -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }} ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
           EOF
