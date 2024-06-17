@@ -17,7 +17,7 @@ jobs:
       PRO_VERSION: '1.0.0-SNAPSHOT'
 
       # 容器镜像
-      ALIYUN_CR_REGISTORY: 'registry.cn-shenzhen.aliyuncs.com'
+      ALIYUN_CR_REGISTORY: 'registry.cn-heyuan.aliyuncs.com'
       ALIYUN_CR_NAMESPACE: 'carrocean'
 
       SERVER_PORT: '30001'
