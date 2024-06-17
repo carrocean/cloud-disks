@@ -20,6 +20,7 @@ jobs:
       ALIYUN_CR_REGISTORY: 'registry.cn-heyuan.aliyuncs.com'
       ALIYUN_CR_NAMESPACE: 'carrocean'
 
+      APPLICATION_YML_URL: 'cloud-disks-boot/src/main/resources/application.yml'
       SERVER_PORT: '30001'
 
     steps:
@@ -40,9 +41,9 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
         run: |
-          sed -i 's/localhost/'"$DB_URL_PORT"'/g' src/main/resources/application.yml
-          sed -i 's/root/'"$DB_USER"'/g' src/main/resources/application.yml
-          sed -i 's/123456/'"$DB_PASS"'/g' src/main/resources/application.yml
+          sed -i 's/localhost/'"$DB_URL_PORT"'/g' ${{ APPLICATION_YML_URL }}
+          sed -i 's/root/'"$DB_USER"'/g' ${{ APPLICATION_YML_URL }}
+          sed -i 's/123456/'"$DB_PASS"'/g' ${{ APPLICATION_YML_URL }}
 
       - name: Build SpringBoot application
         run: |
