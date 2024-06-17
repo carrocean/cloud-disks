@@ -36,8 +36,6 @@ jobs:
           cd cloud-disks-ui
           npm install
           npm run build
-        env:
-          CI: true
 
       - name: Build Docker images
         run: |
@@ -45,8 +43,12 @@ jobs:
           docker build -t ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} .
 
       - name: Login to Aliyun Container Registry
-        run: |
-          echo ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} | docker login --username=${{ secrets.ALIYUN_REGISTRY_USER }} --password-stdin ${{ env.ALIYUN_CR_REGISTORY }}
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: ${{ env.ALIYUN_CR_REGISTORY }}
+          region-id: cn-heyuan
+          username: "${{ secrets.ALIYUN_REGISTRY_USER }}"
+          password: "${{ secrets.ALIYUN_REGISTRY_PASSWORD }}"
 
       - name: Tag and push Vue image to Aliyun
         run: |
@@ -58,7 +60,7 @@ jobs:
           sshpass -p ${{ secrets.ALIYUN_ECS_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{secrets.ALIYUN_ECS_USER}}@${{secrets.ALIYUN_ECS_HOST}} << EOF
             docker stop ${{env.PROJECT_NAME}} || true
             docker rm ${{env.PROJECT_NAME}} || true
-            docker rmi ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
+            docker rmi ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} || true
             docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
             docker run --name ${{env.PROJECT_NAME}} -d -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }} ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
           EOF

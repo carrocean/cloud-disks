@@ -9,9 +9,18 @@ const contentTypeJson='application/json'
 
 const responseTypeJson= "json"
 
-let loading=null;
+let baseUrl = '';
+switch (process.env.NODE_ENV) {
+    case 'development':
+        baseUrl = "http://localhost:30001/"  //开发环境url
+        break
+    case 'production':
+        baseUrl = "http://carrocean.top:30001"   //生产环境url
+        break
+}
+
 const instance =axios.create({
-    baseURL:'http://carrocean.top:30001',
+    baseURL: baseUrl,
     timeout:10*1000,
 })
 //请求拦截
