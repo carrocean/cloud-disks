@@ -9,5 +9,5 @@ public interface IUserService {
     public String registerService( UserEntity newUser);
     public Boolean checkTokenService(HttpServletRequest request);
 
-    UserEntity getById(String userId);
+    public UserEntity getById(String userId);
 }

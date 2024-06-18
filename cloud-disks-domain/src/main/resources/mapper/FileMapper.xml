@@ -5,8 +5,8 @@
 <mapper namespace="com.example.mapper.FileMapper">
     <!-- 增加文件 -->
     <insert id="addFile" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO file (parent_id, original_name, name, is_file, is_dir, size, path, date, type, viewflag, original_path, user_id, has_delete)
-        VALUES (#{parentId}, #{originalName}, #{name}, #{isFile}, #{isDir}, #{size}, #{path}, #{date}, #{type}, #{viewflag}, #{originalPath}, #{userId}, #{hasDelete})
+        INSERT INTO file (parent_id, original_name, name, is_file, is_dir, size, path, date, type, viewflag, original_path, user_id, has_delete,delete_date)
+        VALUES (#{parentId}, #{originalName}, #{name}, #{isFile}, #{isDir}, #{size}, #{path}, #{date}, #{type}, #{viewflag}, #{originalPath}, #{userId}, #{hasDelete},#{deletedate})
     </insert>
     <!-- 删除文件 -->
     <update id="deleteFile">
@@ -33,15 +33,15 @@
             AND file.path LIKE CONCAT('%', #{path}, '%')
         </if>
         <if test="size != null and size != ''">
-            AND file.size = #{size}
+            AND file.size LIKE CONCAT('%', #{size}, '%')
         </if>
         <if test="date != null and date != ''">
-            AND file.date = #{date}
+            AND file.date LIKE CONCAT('%', #{date}, '%')
         </if>
-        <if test="isFile != null">
+        <if test="isFile != 0">
             AND file.is_file = #{isFile}
         </if>
-        <if test="isDir != null">
+        <if test="isDir != 0">
             AND file.is_dir = #{isDir}
         </if>
     </select>

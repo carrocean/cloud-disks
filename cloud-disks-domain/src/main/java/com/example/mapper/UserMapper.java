@@ -12,7 +12,6 @@ public interface UserMapper {
     String getNameByName(@Param("name") String name);
     @Insert("INSERT into user(user_name, pwd,user_email,user_nickName) values(#{name},#{password},#{email},#{nickName})")
     void save(@Param("name")String name,@Param("password")String password,@Param("email")String email,@Param("nickName")String nickName);
-
     @Select("select * from user where user_id = #{userId}")
     UserEntity getUserById(String userId);
 }

@@ -1,22 +1,18 @@
 package com.example.service.impl;
 
 import com.example.entity.FileEntity;
-import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
-import com.example.enums.Constants;
 import com.example.hadoop.dao.FileDao;
 import com.example.mapper.FileMapper;
 import com.example.service.IFileService;
-import com.example.util.DateUtil;
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.filter.*;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.hadoop.dao.basedao.HdfsDao;
 
+import java.beans.Transient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -26,22 +22,19 @@ import java.util.*;
 public class FileServiceImpl implements IFileService {
     @Autowired
     private FileDao fileDao;
-
+    @Autowired
+    private HdfsDao HdfsDao;
     @Autowired
     private FileMapper fileMapper;
 
     /**
      * 获得文件列表，查看文件或目录列表
-     * @param user
-     * @param parentId
      * @return
      */
     @Override
-    public List<FileEntity> getFileList(UserEntity user, long parentId) {
-        return fileMapper.listFileByUserId(user.getUserId());
+    public List<FileEntity> getFileList(String userId, String originalName, String type, String path, String size, String date, Boolean isFile, Boolean isDir) {
+        return fileMapper.searchFiles(Long.parseLong(userId),originalName,type,path,size,date,isFile,isDir);
     }
-
-
 
     /**
      * 上传文件
@@ -66,6 +59,8 @@ public class FileServiceImpl implements IFileService {
             String currentDate = dateFormat.format(new Date());
             fileEntity.setDate(currentDate);
 
+            fileEntity.setDeletedate(null);
+
             // 获取文件名后缀，如果没有则设为其他文件类型
             String fileExtension = "";
             String[] parts = Objects.requireNonNull(file.getOriginalFilename()).split("\\.");
@@ -76,7 +71,7 @@ public class FileServiceImpl implements IFileService {
             }
             fileEntity.setName(parts[0]);
             fileEntity.setType(fileExtension);
-
+            //
             fileMapper.addFile(fileEntity);
             // 调用上传文件到HDFS的方法
             fileDao.upload(inputStream, fileEntity, user);
@@ -89,6 +84,11 @@ public class FileServiceImpl implements IFileService {
         }
     }
 
+    public byte[] downloadFile(UserEntity user, FileEntity file) {
+        return HdfsDao.download(user, file);
+    }
+
+    //文件下载查询
     @Override
     public FileEntity getById(long userId,long fileId) {
         return fileMapper.getById(userId,fileId);
@@ -97,7 +97,28 @@ public class FileServiceImpl implements IFileService {
     //文件删除
     @Override
     public void deleteById(String userId, long fileId) {
-        fileMapper.deleteById(userId, fileId);
+        fileMapper.deleteFile(Long.parseLong(userId), fileId);
+    }
+    //回收站删除
+    @Override
+    public void deleteFilePermanently(String userId, long id) {
+        fileMapper.deleteFilePermanently(Long.parseLong(userId),id);
     }
 
+    @Override
+    public void deleteOldFilesFromRecycleBin(String userId) {
+        fileMapper.deleteOldFilesFromRecycleBin(Long.parseLong(userId));
+    }
+
+    //回收站查询
+    @Override
+    public List<FileEntity> getRecycleBinFiles(String userId) {
+        return fileMapper.getRecycleBinFiles(Long.parseLong(userId));
+    }
+
+    //回收站文件恢复
+    @Override
+    public void restoreFileFromRecycleBin(String userId,long id) {
+        fileMapper.restoreFileFromRecycleBin(Long.parseLong(userId),id);
+    }
 }

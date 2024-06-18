@@ -29,14 +29,14 @@ public interface FileMapper {
 
     //回收站功能
     //删除
-    void deleteFilePermanently(@Param("id") long id);
+    void deleteFilePermanently(@Param("userId") long userId,@Param("id") long id);
 
-    void deleteOldFilesFromRecycleBin();
+    void deleteOldFilesFromRecycleBin(@Param("userId") long userId);
 
     //查看回收站
     List<FileEntity> getRecycleBinFiles(@Param("userId") long userId);
     //恢复
-    void restoreFileFromRecycleBin(@Param("id") long id);
+    void restoreFileFromRecycleBin(@Param("userId")long userId,@Param("id") long id);
 
 
 }

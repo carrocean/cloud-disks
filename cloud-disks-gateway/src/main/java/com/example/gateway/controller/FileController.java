@@ -48,13 +48,12 @@ public class FileController {
 
     /**
      * 上传文件
-     * @param token
      * @param file
      * @return
      */
     @PostMapping("/upload")
-    public AjaxResult upload(@RequestHeader(value = "token") String token,MultipartFile file) {
-        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
+    public AjaxResult upload(HttpServletRequest request,MultipartFile file) {
+        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(request.getHeader("token")));
         fileService.upload(user, file);
         log.info("上传成功");
         return AjaxResult.success();
@@ -64,13 +63,12 @@ public class FileController {
      * 下载文件
      * @param request
      * @param token
-     * @param fileId
      * @return
      */
     @GetMapping("/downloadFile")
     public ResponseEntity<byte[]> downloadFile(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "id") long id) {
-        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
-        FileEntity file = fileService.getById(Long.parseLong(),id);
+        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(request.getHeader("token")));
+        FileEntity file = fileService.getById(Long.parseLong(JwtUtil.getUserIdByToken(token)),id);
         byte[] fileBytes = fileService.downloadFile(user,file);
         // 设置响应头
         HttpHeaders headers = new HttpHeaders();
@@ -88,9 +86,16 @@ public class FileController {
      * @return
      */
     @GetMapping("/fileList")
-    public AjaxResult fileList(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "parentId",required = false, defaultValue = "0") long parentId) {
-        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
-        List<FileEntity> files = fileService.getFileList(user, parentId);
+    public AjaxResult fileList(HttpServletRequest request,
+                               @RequestParam(value = "originalName",required = false) String originalName,
+                               @RequestParam(value = "type",required = false) String type,
+                               @RequestParam(value = "path",required = false) String path,
+                               @RequestParam(value = "size",required = false) String size,
+                               @RequestParam(value = "date",required = false) String date,
+                               @RequestParam(value = "isFile",required = false,defaultValue="0") Boolean isFile,
+                               @RequestParam(value = "isDir",required = false,defaultValue ="0") Boolean isDir){
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        List<FileEntity> files = fileService.getFileList(userId,originalName,type,path,size,date,isFile,isDir);
         return AjaxResult.success(files);
     }
 
@@ -107,10 +112,30 @@ public class FileController {
         return AjaxResult.success();
     }
 
+    //回收站功能
+    //删除
+    @DeleteMapping("/RecycleBin/manualDelete")
+    public void deleteFilePermanently(HttpServletRequest request,@RequestParam(value = "id") long fileId) {
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        fileService.deleteFilePermanently(userId,fileId);
+    }
 
+    @DeleteMapping("/RecycleBin/automaticDelete")
+    public void deleteOldFilesFromRecycleBin(HttpServletRequest request) {
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        fileService.deleteOldFilesFromRecycleBin(userId);
+    }
 
+    //查看回收站文件
+    @GetMapping("/RecycleBin/fileList")
+    public List<FileEntity> getRecycleBinFiles(HttpServletRequest request) {
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        return fileService.getRecycleBinFiles(userId);
+    }
 
-
-
-
+    @PostMapping("/RecycleBin/recover")
+    public void restoreFileFromRecycleBin(HttpServletRequest request,@RequestParam long id) {
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        fileService.restoreFileFromRecycleBin(userId,id);
+    }
 }

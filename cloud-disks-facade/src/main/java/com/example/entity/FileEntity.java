@@ -19,6 +19,7 @@ public class FileEntity {
 	private String type; // 文件类型
 	private String viewflag;
 	private int hasDelete; // 是否已经删除
+	private String deletedate;
 	
 	private String originalPath;
 
