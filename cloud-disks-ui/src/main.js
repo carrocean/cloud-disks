@@ -19,7 +19,6 @@ import Confirm from './utils/Confirm'
 import Utils from './utils/Utils'
 //自定义组件
 import Table from '@/components/Table.vue'
-import Icon from '@/components/Icon.vue'
 import NoData from '@/components/NoData.vue'
 import FolderSelect from '@/components/FolderSelect.vue'
 // 引入全局函数
@@ -34,7 +33,6 @@ app.use(ElementPlus)
 app.use(router)
 app.use(store)
 app.component("Table", Table);
-app.component("Icon", Icon);
 app.component("NoData", NoData);
 app.component("FolderSelect", FolderSelect);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

@@ -32,8 +32,34 @@ public class FileServiceImpl implements IFileService {
      * @return
      */
     @Override
+<<<<<<< HEAD
     public List<FileEntity> getFileList(String userId, String originalName, String type, String path, String size, String date, Boolean isFile, Boolean isDir) {
         return fileMapper.searchFiles(Long.parseLong(userId),originalName,type,path,size,date,isFile,isDir);
+=======
+    public List<FileEntity> getFileList(UserEntity user, long parentId) {
+        return fileMapper.listFileByUserId(user.getUserId());
+    }
+
+    /**
+     * 删除hdfs中的文件，删除文件或目录时使用
+     * @param user
+     * @param file
+     */
+    @Override
+    public void deleteHdfs(UserEntity user, FileEntity file) {
+        fileDao.deleteFileOrFolder(file, user);
+    }
+
+    /**
+     * 下载文件
+     * @param user
+     * @param file
+     * @return
+     */
+    @Override
+    public byte[] downloadFile(UserEntity user, FileEntity file) {
+        return fileDao.downloadFile(user, file);
+>>>>>>> 6034c46283214f71abc5d22c50f4c10f62b62c64
     }
 
     /**
@@ -71,10 +97,15 @@ public class FileServiceImpl implements IFileService {
             }
             fileEntity.setName(parts[0]);
             fileEntity.setType(fileExtension);
+<<<<<<< HEAD
             //
             fileMapper.addFile(fileEntity);
+=======
+
+>>>>>>> 6034c46283214f71abc5d22c50f4c10f62b62c64
             // 调用上传文件到HDFS的方法
             fileDao.upload(inputStream, fileEntity, user);
+            fileMapper.addFile(fileEntity);
 
             // 关闭输入流
             IOUtils.closeQuietly(inputStream);

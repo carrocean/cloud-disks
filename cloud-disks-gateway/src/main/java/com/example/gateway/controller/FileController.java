@@ -112,6 +112,7 @@ public class FileController {
         return AjaxResult.success();
     }
 
+<<<<<<< HEAD
     //回收站功能
     //删除
     @DeleteMapping("/RecycleBin/manualDelete")
@@ -138,4 +139,6 @@ public class FileController {
         String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
         fileService.restoreFileFromRecycleBin(userId,id);
     }
+=======
+>>>>>>> 6034c46283214f71abc5d22c50f4c10f62b62c64
 }
