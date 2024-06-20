@@ -35,7 +35,7 @@
             icon="Delete"
             :disabled="multiple"
             @click="handleDelete"
-        >删除
+        >彻底删除
         </el-button>
       </el-col>
     </el-row>
@@ -81,7 +81,7 @@
               type="text"
               icon="Delete"
               @click="handleDelete(scope.row)"
-          >删除
+          >彻底删除
           </el-button>
         </template>
       </el-table-column>

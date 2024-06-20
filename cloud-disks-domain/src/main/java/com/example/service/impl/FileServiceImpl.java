@@ -74,16 +74,6 @@ public class FileServiceImpl implements IFileService {
     }
 
     /**
-     * 删除hdfs中的文件，删除文件或目录时使用
-     * @param user
-     * @param file
-     */
-    @Override
-    public void deleteHdfs(UserEntity user, FileEntity file) {
-        fileDao.deleteFileOrFolder(file, user);
-    }
-
-    /**
      * 下载文件
      * @param user
      * @param file

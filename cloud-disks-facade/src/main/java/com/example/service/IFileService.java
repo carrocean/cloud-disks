@@ -10,19 +10,12 @@ public interface IFileService {
     /**
      * 获得文件列表，查看文件或目录列表
      *
-     * @param user
+     * @param userId
      * @param parentId
      * @param sideType
      * @return
      */
     public List<FileEntity> getFileList(String userId, long parentId, String sideType);
-
-    /**
-     * 删除hdfs中的文件，删除文件或目录时使用
-     * @param user
-     * @param file
-     */
-    public void deleteHdfs(UserEntity user, FileEntity file);
 
     /**
      * 下载文件

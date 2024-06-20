@@ -39,15 +39,28 @@ public class RecycleController {
     }
 
     /**
-     * 删除文件
+     * 恢复文件
      * @param request
-     * @param fileId
+     * @param file
      * @return
      */
-    @PutMapping("/deleteFile")
-    public AjaxResult deleteFile(HttpServletRequest request, @RequestParam(value = "id") long fileId) {
+    @PostMapping("/recycleRecover")
+    public AjaxResult recycleRecover(HttpServletRequest request, @RequestBody FileEntity file) {
         String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
-//        recycleService.deleteById(userId, fileId);
+        recycleService.recoverFileById(userId, String.valueOf(file.getId()));
+        return AjaxResult.success();
+    }
+
+    /**
+     * 删除文件
+     * @param request
+     * @param file
+     * @return
+     */
+    @DeleteMapping("/recycleDelete")
+    public AjaxResult recycleDelete(HttpServletRequest request, @RequestBody FileEntity file) {
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        recycleService.deleteById(userId, String.valueOf(file.getId()));
         return AjaxResult.success();
     }
 
