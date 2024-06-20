@@ -1,21 +1,21 @@
 package com.example.service;
 
 import com.example.entity.FileEntity;
-import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.List;
 
 public interface IFileService {
     /**
      * 获得文件列表，查看文件或目录列表
+     *
      * @param user
-     * @param parentid
+     * @param parentId
+     * @param sideType
      * @return
      */
-    public List<FileEntity> getFileList(UserEntity user, long parentid);
+    public List<FileEntity> getFileList(String userId, long parentId, String sideType);
 
     /**
      * 删除hdfs中的文件，删除文件或目录时使用

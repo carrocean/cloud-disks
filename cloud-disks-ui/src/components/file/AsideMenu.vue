@@ -71,7 +71,7 @@
       </el-sub-menu>
       <el-menu-item
           index="6"
-          :route="{ name: 'file', query: { fileType: 6 } }"
+          :route="{ name: 'recycle', query: { fileType: 6 } }"
           class="recovery"
       >
         <el-icon :size="20">
@@ -112,14 +112,14 @@ const myFileMenuMap = ref({ // 菜单 index 和名称 Map
   8: '我的分享'
 })
 // 当前激活菜单的 index
-const activeIndex = computed(() => String(route.query.fileType)) //  获取当前路由参数中包含的文件类型
+const activeIndex = computed(() => route.query.fileType ? String(route.query.fileType) : String(0)); //  获取当前路由参数中包含的文件类型
 
 watch(activeIndex, (newValue) => {
-  document.title = `${myFileMenuMap[Number(newValue)]} - ${config.siteName}`
+  document.title = `${myFileMenuMap.value[Number(newValue)]} - ${config.siteName}`
 })
 
 onMounted(() => {
-  document.title = `${myFileMenuMap[Number(activeIndex)]} - ${config.siteName}`
+  document.title = `${myFileMenuMap.value[Number(activeIndex)]} - ${config.siteName}`
 })
 
 

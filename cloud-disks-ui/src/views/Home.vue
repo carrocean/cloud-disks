@@ -1,12 +1,12 @@
 <template>
-  <div class="file-wrapper" @dragenter="showUploadMask">
+  <div class="file-wrapper">
     <el-container class="el-container">
       <el-aside width="auto">
         <AsideMenu></AsideMenu>
       </el-aside>
       <el-container>
         <el-main class="el-main">
-          <FileList></FileList>
+          <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -15,16 +15,6 @@
 
 <script setup>
 import AsideMenu from '@/components/file/AsideMenu.vue'
-import FileList from '@/components/file/FileList.vue'
-
-// 显示拖拽上传文件遮罩
-function showUploadMask(e) {
-  e.stopPropagation();
-  e.preventDefault();
-  console.log("showUploadMask")
-  this.$store.commit("showUploadMask");
-}
-
 
 </script>
 

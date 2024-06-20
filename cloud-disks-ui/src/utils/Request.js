@@ -12,7 +12,7 @@ const responseTypeJson= "json"
 let baseUrl = '';
 switch (process.env.NODE_ENV) {
     case 'development':
-        baseUrl = "http://localhost:30001/"  //开发环境url
+        baseUrl = "http://localhost:30001"  //开发环境url
         break
     case 'production':
         baseUrl = "http://carrocean.top:30001"   //生产环境url

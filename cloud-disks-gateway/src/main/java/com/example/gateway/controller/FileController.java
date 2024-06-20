@@ -87,10 +87,13 @@ public class FileController {
      *
      * @return
      */
-    @GetMapping("/fileList")
-    public AjaxResult fileList(HttpServletRequest request, @RequestHeader(value = "token") String token, @RequestParam(value = "parentId",required = false, defaultValue = "0") long parentId) {
-        UserEntity user = userService.getById(JwtUtil.getUserIdByToken(token));
-        List<FileEntity> files = fileService.getFileList(user, parentId);
+    @PostMapping("/fileList")
+    public AjaxResult fileList(HttpServletRequest request,
+                               @RequestParam(value = "parentId",required = false, defaultValue = "0") long parentId,
+                               @RequestParam(value = "sideType",required = false, defaultValue = "all") String sideType) {
+        log.info("parentId=" + parentId + ", sideType=" + sideType);
+        String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
+        List<FileEntity> files = fileService.getFileList(userId, parentId, sideType);
         return AjaxResult.success(files);
     }
 

@@ -1,18 +1,11 @@
 package com.example.service.impl;
 
 import com.example.entity.FileEntity;
-import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
-import com.example.enums.Constants;
 import com.example.hadoop.dao.FileDao;
 import com.example.mapper.FileMapper;
 import com.example.service.IFileService;
-import com.example.util.DateUtil;
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.filter.*;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,13 +25,52 @@ public class FileServiceImpl implements IFileService {
 
     /**
      * 获得文件列表，查看文件或目录列表
-     * @param user
+     *
+     * @param userId
      * @param parentId
+     * @param sideType
      * @return
      */
     @Override
-    public List<FileEntity> getFileList(UserEntity user, long parentId) {
-        return fileMapper.listFileByUserId(user.getUserId());
+    public List<FileEntity> getFileList(String userId, long parentId, String sideType) {
+        List<FileEntity> files;
+        if(sideType.equals("all")) {
+            if(parentId == 0) {
+                files = fileMapper.listFileByUserId(userId);
+            } else {
+                files = fileMapper.listFileByParentId(userId, parentId);
+            }
+        } else {
+            String typePattern = generateTypePattern(sideType);
+            if(sideType.equals("other")) {
+                files = fileMapper.listFileByNotType(userId, typePattern);
+            } else {
+                files = fileMapper.listFileByType(userId, typePattern);
+            }
+        }
+        return files;
+    }
+
+    private String generateTypePattern(String sideType) {
+        String image = "'jpg','jpeg','png','gif','bmp','tiff'";
+        String document = "'pdf','doc','docx','xls','xlsx','ppt','pptx','txt'";
+        String video = "'mp4','avi','mov','wmv','flv','mkv'";
+        String music = "'mp3','wav','aac','ogg','flac'";
+        String other = image + "," + document + "," + video + "," + music;
+        switch (sideType) {
+            case "image":
+                return image;
+            case "document":
+                return document;
+            case "video":
+                return video;
+            case "music":
+                return music;
+            case "other":
+                return other;
+            default:
+                return "%";
+        }
     }
 
     /**
