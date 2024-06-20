@@ -19,22 +19,14 @@
 
     <el-row :gutter="10" class="mb10">
       <el-col :span="1.5">
-        <el-upload
-            :action=uploadUrl
-            :limit="1"
-            :headers="headers"
-            :show-file-list="false"
-            :on-success="successUpload"
-        >
-          <template #trigger>
-            <el-button type="primary" plain>
-              <el-icon>
-                <Upload></Upload>
-              </el-icon>
-              <span>上传</span>
-            </el-button>
-          </template>
-        </el-upload>
+        <el-button
+            type="primary"
+            plain
+            icon="RefreshLeft"
+            :disabled="multiple"
+            @click="handleRecover"
+        >恢复
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -81,15 +73,9 @@
         <template #default="scope">
           <el-button
               type="text"
-              icon="Download"
-              @click="handleDownLoad(scope.row)"
-          >下载
-          </el-button>
-          <el-button
-              type="text"
-              icon="Share"
-              @click="handleShare(scope.row)"
-          >分享
+              icon="RefreshLeft"
+              @click="handleRecover(scope.row)"
+          >恢复
           </el-button>
           <el-button
               type="text"
@@ -105,13 +91,10 @@
 </template>
 
 <script setup>
-import {deleteFile, downloadFile, fileList} from "@/api/file.js";
+import {recycleDelete, recycleList, recycleRecover} from "@/api/recycle.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {useRouter} from "vue-router";
-import common from "@/libs/globalFunction/common.js";
-import globalConfig from "@/config/index.js";
 import {ElMessage} from "element-plus";
-import {Upload} from "@element-plus/icons-vue";
 import {parseTime} from '@/utils/Utils.js'
 
 
@@ -141,18 +124,6 @@ const data = reactive({
 
 const {queryParams} = toRefs(data);
 
-const token = common.getCookies(globalConfig.tokenKeyName)
-const headers = ref({
-  'token': token
-})
-const uploadUrl = ref('http://localhost:30001/api/cloud/disks/file/upload')
-
-// 文件上传成功钩子
-function successUpload() {
-  ElMessage.success("上传成功")
-  getList();
-}
-
 function getAssetsFile(type) {
   return new URL('/images/file_'+type+'.png', import.meta.url).href
 }
@@ -161,7 +132,7 @@ function getAssetsFile(type) {
 /** 查询文件 */
 function getList() {
   loading.value = true;
-  fileList(queryParams.value, dateRange.value).then(response => {
+  recycleList().then(response => {
     operlogList.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -198,36 +169,21 @@ function handleSortChange(column, prop, order) {
 /** 删除按钮操作 */
 function handleDelete(row) {
   loading.value = true;
-  deleteFile(row).then(response => {
+  recycleDelete(row).then(response => {
     ElMessage.success("删除成功")
     getList();
     loading.value = false;
   });
 }
 
-/** 下载按钮操作 */
-async function handleDownLoad(row) {
-  downloadFile(row).then(response => {
-    if (response) {
-      let fileName = row.originalName
-      let url = window.URL.createObjectURL(new Blob([response.data]));
-      let link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      ElMessage.success('下载成功')
-    } else {
-      console.error('下载失败，响应状态码：', response.status);
-      ElMessage.error('下载失败')
-    }
+/** 恢复按钮操作 */
+async function handleRecover(row) {
+  loading.value = true;
+  recycleRecover(row).then(response => {
+    ElMessage.success("恢复成功")
+    getList();
+    loading.value = false;
   });
-}
-
-/** 分享按钮操作 */
-async function handleShare(row) {
-
 }
 
 getList();

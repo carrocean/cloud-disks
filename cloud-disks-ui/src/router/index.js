@@ -38,7 +38,7 @@ const router = createRouter({
         {
           path: 'recycle',
           name: 'recycle',
-          component: () => import('../views/file/FileList.vue')
+          component: () => import('../views/file/Recycle.vue')
         }
       ]
     },
