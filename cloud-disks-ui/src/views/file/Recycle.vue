@@ -61,7 +61,7 @@
       </el-table-column>
       <el-table-column label="大小" align="left" prop="size">
         <template #default="scope">
-          <span>{{ scope.row.size }} B</span>
+          <span>{{ scope.row.size }}</span>
         </template>
       </el-table-column>
       <el-table-column label="添加日期" align="center" prop="date" sortable="custom" :sort-orders="['descending', 'ascending']">

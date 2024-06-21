@@ -100,7 +100,7 @@ public class FileServiceImpl implements IFileService {
             fileEntity.setOriginalName(file.getOriginalFilename());
             fileEntity.setFile(true);
             fileEntity.setDir(false);
-            fileEntity.setSize(String.valueOf(file.getSize())); // 设置文件大小
+            fileEntity.setSize(setFileSize(file.getSize())); // 设置文件大小
             fileEntity.setPath(file.getOriginalFilename()); // 设置文件在HDFS中的路径
 
             // 获取当前时间并赋值
@@ -129,6 +129,25 @@ public class FileServiceImpl implements IFileService {
             // 处理异常
             e.printStackTrace();
         }
+    }
+
+    public String setFileSize(long size) {
+        String unit = "B"; // 默认单位为字节
+        double fileSize = size;
+
+        if (size >= 1000) {
+            fileSize = size / 1000.0;
+            unit = "KB";
+        }
+        if (fileSize >= 1000) {
+            fileSize /= 1000;
+            unit = "MB";
+        }
+
+        // 格式化文件大小，保留两位小数
+        fileSize = Math.round(fileSize * 100.0) / 100.0;
+
+        return String.valueOf(fileSize) + " " + unit;
     }
 
     @Override
