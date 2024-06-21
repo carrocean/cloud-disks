@@ -11,8 +11,8 @@ var managerUrl = {
 export function recycleList(data) {
     return request({
         url: managerUrl.recycleList,
-        method: 'post',
-        data:data,
+        method: 'get',
+        params:data,
     })
 }
 

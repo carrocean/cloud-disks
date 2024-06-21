@@ -4,7 +4,7 @@
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px" style="float:right;">
       <el-form-item label="文件名称" prop="title">
         <el-input
-            v-model="queryParams.name"
+            v-model="fileName"
             placeholder="请输入文件名称"
             clearable
             style="width: 240px;"
@@ -168,6 +168,7 @@ const fileTypeList = ref({ // 菜单 index 和名称 Map
 })
 let sideType = ref(fileTypeList.value[Number(fileType.value)])
 const parentId = ref(0)
+const fileName = ref('')
 
 
 onMounted(() => {
@@ -194,7 +195,7 @@ function getAssetsFile(type) {
 /** 查询文件 */
 function getList() {
   loading.value = true;
-  let query = {'sideType': sideType.value, 'parentId': parentId.value}
+  let query = {'sideType': sideType.value, 'parentId': parentId.value, 'fileName': fileName.value}
   fileList(query).then(response => {
     operlogList.value = response.data;
     total.value = response.total;
@@ -210,9 +211,7 @@ function handleQuery() {
 
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = [];
-  proxy.resetForm("queryRef");
-  proxy.$refs["operlogRef"].sort(defaultSort.value.prop, defaultSort.value.order);
+  fileName.value = ''
   handleQuery();
 }
 

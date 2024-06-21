@@ -119,7 +119,7 @@ watch(activeIndex, (newValue) => {
 })
 
 onMounted(() => {
-  document.title = `${myFileMenuMap.value[Number(activeIndex)]} - ${config.siteName}`
+  document.title = `${myFileMenuMap.value[Number(0)]} - ${config.siteName}`
 })
 
 

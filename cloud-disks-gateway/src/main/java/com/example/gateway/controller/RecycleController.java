@@ -31,10 +31,10 @@ public class RecycleController {
      *
      * @return
      */
-    @PostMapping("/recycleList")
-    public AjaxResult recycleList(HttpServletRequest request) {
+    @GetMapping("/recycleList")
+    public AjaxResult recycleList(HttpServletRequest request, @RequestParam(value = "fileName", required = false, defaultValue = "%") String fileName) {
         String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
-        List<FileEntity> files = recycleService.getRecycleList(userId);
+        List<FileEntity> files = recycleService.getRecycleList(userId, fileName);
         return AjaxResult.success(files);
     }
 

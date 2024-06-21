@@ -35,7 +35,7 @@ export function upload(data) {
 export function fileList(data) {
     return request({
         url: managerUrl.fileList,
-        method: 'post',
+        method: 'get',
         params: data
     });
 }

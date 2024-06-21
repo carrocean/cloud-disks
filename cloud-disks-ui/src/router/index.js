@@ -29,6 +29,7 @@ const router = createRouter({
           description: '图片 文档 视频 音乐 其他 回收站 我的分享'
         }
       },
+      redirect:'/home/file',
       children: [
         {
           path: 'file',

@@ -4,7 +4,7 @@
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px" style="float:right;">
       <el-form-item label="文件名称" prop="title">
         <el-input
-            v-model="queryParams.name"
+            v-model="fileName"
             placeholder="请输入文件名称"
             clearable
             style="width: 240px;"
@@ -123,6 +123,7 @@ const data = reactive({
 });
 
 const {queryParams} = toRefs(data);
+const fileName = ref('')
 
 function getAssetsFile(type) {
   return new URL('/images/file_'+type+'.png', import.meta.url).href
@@ -132,7 +133,8 @@ function getAssetsFile(type) {
 /** 查询文件 */
 function getList() {
   loading.value = true;
-  recycleList().then(response => {
+  let query = {'fileName': fileName.value}
+  recycleList(query).then(response => {
     operlogList.value = response.data;
     total.value = response.total;
     loading.value = false;

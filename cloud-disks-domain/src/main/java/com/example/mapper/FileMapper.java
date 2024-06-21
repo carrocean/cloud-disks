@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface FileMapper {
 
-    @Select("select * from file where user_id = #{userId} and has_delete = '0'")
-    List<FileEntity> listFileByUserId(String userId);
+    @Select("select * from file where user_id = #{userId} and has_delete = '0' and name like #{fileName}")
+    List<FileEntity> listFileByUserId(String userId, String fileName);
 
-    @Select("select * from file where user_id = #{userId} and has_delete = '0' and parent_id = #{parentId}")
-    List<FileEntity> listFileByParentId(String userId, long parentId);
+    @Select("select * from file where user_id = #{userId} and has_delete = '0' and parent_id = #{parentId} and name like #{fileName}")
+    List<FileEntity> listFileByParentId(String userId, long parentId, String fileName);
 
     @Select("select * from file where id = #{fileId}")
     FileEntity getById(String fileId);
@@ -26,9 +26,9 @@ public interface FileMapper {
     @Update("update file set has_delete='1' where user_id = #{userId} and id = #{fileId}")
     void deleteById(String userId, long fileId);
 
-    @Select("select * from file where user_id = #{userId} and has_delete = '0' and type in (${typePattern})")
-    List<FileEntity> listFileByType(String userId, String typePattern);
+    @Select("select * from file where user_id = #{userId} and has_delete = '0' and type in (${typePattern}) and name like #{fileName}")
+    List<FileEntity> listFileByType(String userId, String typePattern, String fileName);
 
-    @Select("select * from file where user_id = #{userId} and has_delete = '0' and type not in (${typePattern})")
-    List<FileEntity> listFileByNotType(String userId, String typePattern);
+    @Select("select * from file where user_id = #{userId} and has_delete = '0' and type not in (${typePattern}) and name like #{fileName}")
+    List<FileEntity> listFileByNotType(String userId, String typePattern, String fileName);
 }

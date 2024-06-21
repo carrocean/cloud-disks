@@ -51,6 +51,15 @@ public class FileDao {
     }
 
     /**
+     * 创建文件夹
+     * @param fileEntity
+     * @param userEntity
+     */
+    public void mkDir(FileEntity fileEntity, UserEntity userEntity) {
+        hdfsDao.mkDir(fileEntity,userEntity);
+    }
+
+    /**
      * 复制或者移动文件或者目录
      * @param user
      * @param sourceFile

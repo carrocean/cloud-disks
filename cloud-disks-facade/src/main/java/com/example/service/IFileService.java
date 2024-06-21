@@ -13,9 +13,10 @@ public interface IFileService {
      * @param userId
      * @param parentId
      * @param sideType
+     * @param fileName
      * @return
      */
-    public List<FileEntity> getFileList(String userId, long parentId, String sideType);
+    public List<FileEntity> getFileList(String userId, long parentId, String sideType, String fileName);
 
     /**
      * 下载文件

@@ -29,23 +29,24 @@ public class FileServiceImpl implements IFileService {
      * @param userId
      * @param parentId
      * @param sideType
+     * @param fileName
      * @return
      */
     @Override
-    public List<FileEntity> getFileList(String userId, long parentId, String sideType) {
+    public List<FileEntity> getFileList(String userId, long parentId, String sideType, String fileName) {
         List<FileEntity> files;
         if(sideType.equals("all")) {
             if(parentId == 0) {
-                files = fileMapper.listFileByUserId(userId);
+                files = fileMapper.listFileByUserId(userId, fileName);
             } else {
-                files = fileMapper.listFileByParentId(userId, parentId);
+                files = fileMapper.listFileByParentId(userId, parentId, fileName);
             }
         } else {
             String typePattern = generateTypePattern(sideType);
             if(sideType.equals("other")) {
-                files = fileMapper.listFileByNotType(userId, typePattern);
+                files = fileMapper.listFileByNotType(userId, typePattern, fileName);
             } else {
-                files = fileMapper.listFileByType(userId, typePattern);
+                files = fileMapper.listFileByType(userId, typePattern, fileName);
             }
         }
         return files;
