@@ -18,7 +18,7 @@ router.beforeEach((to, from, next) => {
         }
     } else {
         // 如果没有token，且尝试访问需要登录的页面，则重定向到登录页
-        if (to.path === '/file' || to.path === '/') {
+        if (to.path === '/home' || to.path === '/') {
             next('/login');
         } else {
             next(); // 允许其他不需要登录的页面访问
