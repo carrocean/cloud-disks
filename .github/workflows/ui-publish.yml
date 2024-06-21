@@ -19,6 +19,7 @@ jobs:
       # 容器镜像
       ALIYUN_CR_REGISTORY: 'registry.cn-heyuan.aliyuncs.com'
       ALIYUN_CR_NAMESPACE: 'carrocean'
+      BUILD_NUMBER: ${{ github.run_number }}
 
       SERVER_PORT: '80'
 
@@ -40,7 +41,7 @@ jobs:
       - name: Build Docker images
         run: |
           cd cloud-disks-ui
-          docker build -t ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} .
+          docker build -t ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}.${{ env.BUILD_NUMBER }} .
 
       - name: Login to Aliyun Container Registry
         uses: aliyun/acr-login@v1
@@ -52,15 +53,15 @@ jobs:
 
       - name: Tag and push Vue image to Aliyun
         run: |
-          docker tag ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
-          docker push ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
+          docker tag ${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}.${{ env.BUILD_NUMBER }} ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}.${{ env.BUILD_NUMBER }}
+          docker push ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}.${{ env.BUILD_NUMBER }}
 
       - name: Deploy to Aliyun ECS
         run: |
           sshpass -p ${{ secrets.ALIYUN_ECS_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{secrets.ALIYUN_ECS_USER}}@${{secrets.ALIYUN_ECS_HOST}} << EOF
             docker stop ${{env.PROJECT_NAME}} || true
             docker rm ${{env.PROJECT_NAME}} || true
-            docker rmi ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}} || true
-            docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
-            docker run --name ${{env.PROJECT_NAME}} -d -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }} ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}
+            docker rmi ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}.${{ env.BUILD_NUMBER }} || true
+            docker pull ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}.${{ env.BUILD_NUMBER }}
+            docker run --name ${{env.PROJECT_NAME}} -d -p ${{ env.SERVER_PORT }}:${{ env.SERVER_PORT }} ${{ env.ALIYUN_CR_REGISTORY }}/${{env.ALIYUN_CR_NAMESPACE}}/${{env.PROJECT_NAME}}:${{env.PRO_VERSION}}.${{ env.BUILD_NUMBER }}
           EOF
