@@ -42,4 +42,6 @@ public interface IFileService {
     FileEntity getById(String fileId);
 
     void deleteById(String userId, long fileId);
+
+    void mkdir(FileEntity file, UserEntity user);
 }

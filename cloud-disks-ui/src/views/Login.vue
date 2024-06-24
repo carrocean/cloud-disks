@@ -71,6 +71,7 @@ function doSubmit() {
   login(formData.value).then(res => {
     if (res.code === 200) {
       proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
+      proxy.$common.setCookies('name', res.data.userName)
       ElMessage.success("登录成功");
       router.push('/home/file');
     } else {

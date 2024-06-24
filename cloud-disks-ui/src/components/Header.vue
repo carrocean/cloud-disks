@@ -21,23 +21,14 @@
 </template>
 
 <script setup>
-import {ElMessage} from "element-plus";
-import {onMounted, ref} from "vue";
-import {checkUserLoginInfo} from "@/api/user.js";
+import {computed, getCurrentInstance} from "vue";
 import common from "@/libs/globalFunction/common.js";
 import config from "@/config/index.js";
 import router from "@/router/index.js";
 import {User} from "@element-plus/icons-vue";
+const {proxy} = getCurrentInstance()
 
-let userName = ref('张三')
-
-function getUserName() {
-  checkUserLoginInfo().then(res => {
-    if(res.code === 200) {
-      userName = res.data.userName;
-    }
-  })
-}
+const userName = computed(() => proxy.$common.getCookies('name'))
 
 function handleCommand(command) {
   if (command === 'logout') {
@@ -46,7 +37,6 @@ function handleCommand(command) {
   }
 }
 
-getUserName()
 </script>
 
 <style scoped>

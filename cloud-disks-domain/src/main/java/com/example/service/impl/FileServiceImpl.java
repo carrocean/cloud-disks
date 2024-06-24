@@ -160,4 +160,10 @@ public class FileServiceImpl implements IFileService {
         fileMapper.deleteById(userId, fileId);
     }
 
+    @Override
+    public void mkdir(FileEntity file, UserEntity user) {
+
+        fileDao.mkDir(file, user);
+    }
+
 }
