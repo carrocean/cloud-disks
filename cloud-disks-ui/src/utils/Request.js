@@ -37,6 +37,12 @@ instance.interceptors.request.use(
 //请求后拦截器
 instance.interceptors.response.use(
     (res) => {
+        // 检查 Content-Type 是否为 application/octet-stream
+        if (res.headers['content-type'] === 'application/octet-stream') {
+            // 如果是，则直接返回数据
+            return res;
+        }
+        // 否则返回正常的 res
         return res.data;
     },
     (error) => {
