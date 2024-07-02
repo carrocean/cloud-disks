@@ -10,6 +10,10 @@ spring:
     url: jdbc:mysql://localhost:3306/dev_cloud_disks_v100?characterEncoding=UTF-8&serverTimezone=GMT%2B8&allowMultiQueries=true
     username: root
     password: 123456
+  servlet:
+    multipart:
+      max-file-size: 10MB        # 设置单个文件最大大小为10MB
+      max-request-size: 100MB    # 设置多个文件大小为100MB
 
 
 mybatis:
@@ -17,3 +21,5 @@ mybatis:
   configuration:
       map-underscore-to-camel-case: true  # 开启驼峰命名
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
