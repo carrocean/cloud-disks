@@ -38,12 +38,12 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     (res) => {
         // 检查 Content-Type 是否为 application/octet-stream
-        if (res.headers['content-type'] === 'application/octet-stream') {
+        if (res.headers['content-type'] === 'application/json') {
             // 如果是，则直接返回数据
-            return res;
+            return res.data;
         }
         // 否则返回正常的 res
-        return res.data;
+        return res;
     },
     (error) => {
         return Promise.reject({showError:true,msg:"网络异常"});

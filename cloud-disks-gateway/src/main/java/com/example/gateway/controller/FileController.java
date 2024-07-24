@@ -1,36 +1,24 @@
 package com.example.gateway.controller;
 
 import com.example.entity.FileEntity;
-import com.example.entity.NodeEntity;
 import com.example.entity.UserEntity;
-import com.example.enums.Constants;
+import com.example.enums.ContentTypeEnum;
 import com.example.service.IFileService;
 import com.example.service.IUserService;
 import com.example.util.*;
-import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.swing.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/cloud/disks/file")
@@ -44,6 +32,11 @@ public class FileController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private static final String FILE_LIST_CACHE_KEY = "fileList:";
 
 
     /**
@@ -74,7 +67,8 @@ public class FileController {
         byte[] fileBytes = fileService.downloadFile(user,file);
         // 设置响应头
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        MediaType mediaType = ContentTypeEnum.getMediaTypeByExtension(file.getType());
+        headers.setContentType(mediaType);
 
         // 返回字节数组
         return ResponseEntity.ok()
@@ -93,7 +87,18 @@ public class FileController {
                                @RequestParam(value = "sideType",required = false, defaultValue = "all") String sideType,
                                @RequestParam(value = "fileName", required = false, defaultValue = "%") String fileName) {
         String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
-        List<FileEntity> files = fileService.getFileList(userId, parentId, sideType, fileName);
+//        List<FileEntity> files = fileService.getFileList(userId, parentId, sideType, fileName);
+
+        String cacheKey = FILE_LIST_CACHE_KEY + userId + ":" + parentId + ":" + sideType + ":" + fileName;
+        // 尝试从Redis获取缓存的文件列表
+        List<FileEntity> files = (List<FileEntity>) redisTemplate.opsForValue().get(cacheKey);
+        if (files == null) {
+            files = fileService.getFileList(userId, parentId, sideType, fileName);
+            // 将文件列表存储到Redis，设置过期时间为1小时（3600秒）
+            redisTemplate.opsForValue().set(cacheKey, files, 3600, TimeUnit.SECONDS);
+        } else {
+            log.info("success redis");
+        }
         return AjaxResult.success(files);
     }
 
