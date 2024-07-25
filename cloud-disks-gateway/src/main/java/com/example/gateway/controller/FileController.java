@@ -89,7 +89,7 @@ public class FileController {
         String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
 //        List<FileEntity> files = fileService.getFileList(userId, parentId, sideType, fileName);
 
-        String cacheKey = FILE_LIST_CACHE_KEY + userId + ":" + parentId + ":" + sideType + ":" + fileName;
+        String cacheKey = FILE_LIST_CACHE_KEY + userId + ":" + sideType;
         // 尝试从Redis获取缓存的文件列表
         List<FileEntity> files = (List<FileEntity>) redisTemplate.opsForValue().get(cacheKey);
         if (files == null) {
@@ -112,6 +112,8 @@ public class FileController {
     public AjaxResult deleteFile(HttpServletRequest request, @RequestParam(value = "id") long fileId) {
         String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
         fileService.deleteById(userId, fileId);
+        String cacheKey = FILE_LIST_CACHE_KEY + userId + ":" + "all";
+        redisTemplate.delete(cacheKey);
         return AjaxResult.success();
     }
 
