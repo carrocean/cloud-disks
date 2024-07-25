@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -109,6 +110,7 @@ public class FileController {
      * @return
      */
     @PutMapping("/deleteFile")
+    @Transactional
     public AjaxResult deleteFile(HttpServletRequest request, @RequestParam(value = "id") long fileId) {
         String userId = JwtUtil.getUserIdByToken(request.getHeader("token"));
         fileService.deleteById(userId, fileId);
