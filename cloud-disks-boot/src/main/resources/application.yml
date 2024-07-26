@@ -15,6 +15,7 @@ spring:
       host: 127.0.0.1
       port: 6379
       password: admin@123
+      timeout: 5000
   servlet:
     multipart:
       max-file-size: 1GB        # 设置单个文件最大大小为10MB
