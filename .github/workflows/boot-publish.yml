@@ -42,6 +42,11 @@ jobs:
           sed -i 's/root/'"${{ secrets.DB_USER }}"'/g' ${{ env.APPLICATION_YML_URL }}
           sed -i 's/123456/'"${{ secrets.DB_PASS }}"'/g' ${{ env.APPLICATION_YML_URL }}
 
+      - name: Configure Redis Connection
+        run: |
+          sed -i 's/127.0.0.1/'"${{ secrets.REDIS_URL_PORT }}"'/g' ${{ env.APPLICATION_YML_URL }}
+          sed -i 's/admin@123/'"${{ secrets.REDIS_PASS }}"'/g' ${{ env.APPLICATION_YML_URL }}
+
       - name: Build SpringBoot application
         run: |
           mvn clean package -DskipTests
